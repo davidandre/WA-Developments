@@ -119,17 +119,19 @@ function wa_getLotNextNumber() {
     // PJB: what if more than one record found? - DA : Forbidden by the system. Throws an error to the user.
     if (lastnumberS !== null && lastnumberS.length > 0) {
     	// if multiple rows throws error as this is not permitted
-    	if (lastnumberS.length>1) 
-    		throw nlapiCreateError('WA-0001','WA Generate Lot Number : Critical Error - Duplicate Reference records found in database.');
+    	if (lastnumberS.length==1) // == for testing, should be >1 
+    		wa_throwError('WA00001');
+
+    		// throw nlapiCreateError(WA_ERRORID_1, WA_ERRORMSG_1);
         
     	// IF record is invalidated. Define what to do ?
     	
     	if (lastnumberS[0].getValue('isinactive') == 'T') 
-    		throw nlapiCreateError('WA-0002','WA Generate lot Number Warning : Generation of new lot number has been disabled by administrator.');
+    		throw nlapiCreateError(WA_ERRORID_2, WA_ERRORMSG_2);
     	
     	// Check if next number is at the maximum allowed (999).
     	if (lastnumberS[0].getValue('custrecord_wagl_calc_lotnumber_lastnum') == '999') 
-    		throw nlapiCreateError('WA-0003','WA Generate lot Number Error : Cannot generate a new lot number. Sytem maximum number of lots build this week has been reached.');
+    		throw nlapiCreateError(WA_ERRORID_3, WA_ERRORMSG_3);
     	
     	// IF record not lock
         if (lastnumberS[0].getValue('custrecord_wagl_calc_lotnumber_lock') == 'F') {
@@ -142,7 +144,7 @@ function wa_getLotNextNumber() {
 
         }
         else {
-       		throw nlapiCreateError('WA-0004','WA Generate Lot Number Warning - A user is alreay generating a lot number. Please try again later.');          
+        	throw nlapiCreateError(WA_ERRORID_4, WA_ERRORMSG_4);          
         }
 
     } else {
