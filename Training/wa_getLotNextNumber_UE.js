@@ -120,18 +120,18 @@ function wa_getLotNextNumber() {
     if (lastnumberS !== null && lastnumberS.length > 0) {
     	// if multiple rows throws error as this is not permitted
     	if (lastnumberS.length==1) // == for testing, should be >1 
-    		wa_throwError('WA00001');
+    		wa_throwError('WA00011');
 
     		// throw nlapiCreateError(WA_ERRORID_1, WA_ERRORMSG_1);
         
     	// IF record is invalidated. Define what to do ?
     	
     	if (lastnumberS[0].getValue('isinactive') == 'T') 
-    		throw nlapiCreateError(WA_ERRORID_2, WA_ERRORMSG_2);
+    		wa_throwError('WA00002');
     	
     	// Check if next number is at the maximum allowed (999).
     	if (lastnumberS[0].getValue('custrecord_wagl_calc_lotnumber_lastnum') == '999') 
-    		throw nlapiCreateError(WA_ERRORID_3, WA_ERRORMSG_3);
+    		wa_throwError('WA00003');
     	
     	// IF record not lock
         if (lastnumberS[0].getValue('custrecord_wagl_calc_lotnumber_lock') == 'F') {
@@ -144,7 +144,7 @@ function wa_getLotNextNumber() {
 
         }
         else {
-        	throw nlapiCreateError(WA_ERRORID_4, WA_ERRORMSG_4);          
+        	wa_throwError('WA00004');         
         }
 
     } else {
@@ -167,7 +167,8 @@ function wa_getLotNextNumber() {
     			nlapiLogExecution( 'DEBUG', 'system error', e.getCode() + '\n' + e.getDetails() );
 			else
 				nlapiLogExecution( 'DEBUG', 'unexpected error', e.toString() );
-     		throw nlapiCreateError('WA-0006','WA Generate Lot Number Warning - Netsuite were unable to generate the new Next Number record for the current week.'); 
+     		
+     		wa_throwError('WA00006');
     	}
     	
     }
@@ -188,8 +189,8 @@ function wa_getLotNextNumber() {
     if (wa_CheckLotNumberExists(newLotNumber)) {
     	// Release the lock
         nlapiSubmitField('customrecord_wagl_lot_nextnumber', lotnumberid, 'custrecord_wagl_calc_lotnumber_lock', 'F');
-
-    	throw nlapiCreateError('WA-0005','WA Generate Lot Number Error - The generated Lot Number already exists in the system. Please contact your administrator to fix the problem.\nLot Number:'+newLotNumber);    	
+        
+        wa_throwError('WA00005');
     }
     // Check that we are really the user who locked the NextNumber
     if (wa_CheckUserWhoLocked(lotnumberid)) {
@@ -203,8 +204,8 @@ function wa_getLotNextNumber() {
 			['F', actuallastnumber]);
       
     }else{
-    	
-       	throw nlapiCreateError('WA-0006','WA Generate Lot Number Error - You try to generate a Lot Number. However you are not the User who request the lock on the Next Number. Please try again later and tell your adminsitrator that its script sucks.');    	     
+    	wa_throwError('WA00007');
+       	    	     
     }
     return true;
 
