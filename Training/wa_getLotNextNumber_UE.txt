@@ -1,3 +1,4 @@
 WA_getLotNextNumber
 Excercise during the Training session with NBS
 Calculation of the lot next number as a User Event Script based on the subsidiary, the current week and year.
+This can be used as example
