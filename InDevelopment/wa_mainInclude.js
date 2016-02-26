@@ -63,12 +63,17 @@ function wa_errors() {
  * 
  ******************************************************************/
 
-//This ususaly mean that the Custom Record customrecord_wagl_lot_nextnumber which contains the lastnumber has more than one row for the same week, year & subsidiary. 
-//Check which one is the good one and remove the other one. 
-//You have to check in the Inventory what is the last number and set it correctly in this custom record
+// Trying to update purchase order rows, but the default departement is empty and the test in the script didn't find it
 wa_errors.WA00001 = 'WA Purchase Order - Defaulting Departement : Departement not defined in the PO header.';
 
-//The selected row (week, subsidiary, year) in the Custom Record customrecord_wagl_lot_nextnumber has been setup as inactive. 
-//Check why and activate the row again
-wa_errors.WA00002 = 'WA Generate lot Number - Generation of new lot number has been disabled by administrator.';
+//Error while refrehsing the list of purchase order rows after the departement field has been changed  in the header
+wa_errors.WA00002 = 'WA Purchase Order - Defaulting Departement : Unable to refresh the list of item with the new selected departement';
 
+//Error while trying to change the departement on a new line of the PO
+wa_errors.WA00003 = 'WA Purchase Order - Defaulting Departement : Unable to change the departement in the new line of the purchase order';
+
+//Error while trying to change the departement on a new line of the PO
+wa_errors.WA00004 = 'WA Purchase Order - Defaulting Departement : Error reading departement on current line';
+
+// The departement value is empty
+wa_errors.WA00005 = 'WA Purchase Order - Defaulting Departement : Departement is empty';
