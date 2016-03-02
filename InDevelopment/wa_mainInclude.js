@@ -77,3 +77,18 @@ wa_errors.WA00004 = 'WA Purchase Order - Defaulting Departement : Error reading 
 
 // The departement value is empty
 wa_errors.WA00005 = 'WA Purchase Order - Defaulting Departement : Departement is empty';
+
+//Trying to update purchase order rows, but the default departement is empty and the test in the script didn't find it
+wa_errors.WA00006 = 'WA Sales Order - Defaulting Departement : Departement not defined in the PO header.';
+
+//Error while refrehsing the list of purchase order rows after the departement field has been changed  in the header
+wa_errors.WA00007 = 'WA Sales Order - Defaulting Departement : Unable to refresh the list of item with the new selected departement';
+
+//Error while trying to change the departement on a new line of the PO
+wa_errors.WA00008 = 'WA Sales Order - Defaulting Departement : Unable to change the departement in the new line of the purchase order';
+
+//Error while trying to change the departement on a new line of the PO
+wa_errors.WA00009 = 'WA Sales Order - Defaulting Departement : Error reading departement on current line';
+
+// The departement value is empty
+wa_errors.WA00010 = 'WA Sales Order - Defaulting Departement : Departement is empty';
