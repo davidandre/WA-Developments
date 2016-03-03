@@ -16,6 +16,30 @@
  */
 var previousSOSelectedDepartment=""
 
+	
+
+	/**
+	 * Page Init function to load the departement value into the global variable
+	 * 
+	 * @param {String} type Access mode: create, copy, edit
+	 * @returns {Void}
+	 */
+	function wa_SOInitPage(type){
+		
+		try {
+			// Retreive the departement value from the header
+			previousSOSelectedDepartment = nlapiGetFieldValue('department');
+	
+		}
+		catch (e) {
+			res = false;
+			wa_throwError('WA00006');
+		}
+		
+	   
+	}
+
+	
 /**
  * Switch on the field name modified and start the approriate functions.
  * 
