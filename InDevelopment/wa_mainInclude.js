@@ -49,6 +49,21 @@ function wa_throwError(errornum) {
 		throw nlapiCreateError('WA-00000', 'WA Error : Unknow Error code return. Please contact your administrator');
 }
 
+
+
+function wa_throwAlert(errornum) {
+	
+	// Check if the errornum exists before trying to throw it
+	if (wa_errors[errornum])  {
+		
+		var errormsg =  wa_errors[errornum];
+		alert(errormsg);
+	}
+	else
+		// if not  throw the default unknown error
+		alert('WA Error : Unknow Alert code return. Please contact your administrator');
+}
+
 /* Empty function as base for error message 
  * Do Not change this
  * */
@@ -92,3 +107,18 @@ wa_errors.WA00009 = 'WA Sales Order - Defaulting Departement : Error reading dep
 
 // The departement value is empty
 wa_errors.WA00010 = 'WA Sales Order - Defaulting Departement : Departement is empty';
+
+//An error occured when trying to get the plate size by square meter value
+wa_errors.WA00010 = 'WA Inventory Adjustment for Plates - Error retreiving the plate size';
+
+//Alert that the plate size is = 0
+wa_errors.WA00011 = 'WA Inventory Adjustment for Plates - Plate size is empty';
+
+// Try to consumme more size than the plate is
+wa_errors.WA00012 = 'WA Inventory Adjustment for Plates - Plate size is smaller than what you want to use';
+
+// Error occured when trying to push the value in the adjustment by Qty field
+wa_errors.WA00013 = 'WA Inventory Adjustment for Plates - An error occured. Please contact your administrator';
+
+//Error occured when trying to read value from the current field (qty by SM)
+wa_errors.WA00014 = 'WA Inventory Adjustment for Plates - An error occured. Please contact your administrator';
