@@ -7,7 +7,7 @@
  * 
  * Version    Date            Author           Remarks
  * 1.00       02 March 2016     david.andre      Work on Raid ID 133 for WA DE
- *
+ * 1.01       23 March 2016		dvid.andre		Copy N° of coils from SO line to WO if create WO is ticked
  */
 
 /* This contains the previous value of the department field in the header of the PO
@@ -176,3 +176,4 @@ function wa_SODefaultDepartementToNewLine(type) {
 	}
 	return false;
 }
+

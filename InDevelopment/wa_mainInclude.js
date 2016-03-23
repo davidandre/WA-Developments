@@ -122,3 +122,15 @@ wa_errors.WA00013 = 'WA Inventory Adjustment for Plates - An error occured. Plea
 
 //Error occured when trying to read value from the current field (qty by SM)
 wa_errors.WA00014 = 'WA Inventory Adjustment for Plates - An error occured. Please contact your administrator';
+
+//Error occured when trying to read Workorder value in an item line in the SO
+wa_errors.WA00015 = 'WA SO to WO - An error occured. Please contact your administrator';
+
+//Error occured when trying to read the Number of coils in an item line in the SO
+wa_errors.WA00016 = 'WA SO to WO - An error occured. Please contact your administrator';
+
+//Error occured when trying to update the WO
+wa_errors.WA00017 = 'WA SO to WO - An error occured. Please contact your administrator';
+
+//Error occured  - The WO ID return after update is different from the one provided to update
+wa_errors.WA00018 = 'WA SO to WO - An error occured. Please contact your administrator';

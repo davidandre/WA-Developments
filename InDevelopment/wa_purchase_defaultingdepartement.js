@@ -26,16 +26,17 @@ var previousSelectedDepartment=""
 	 */
 	function wa_POInitPage(type){
 		
-		try {
-			// Retreive the departement value from the header
-			previousSelectedDepartment = nlapiGetFieldValue('department');
-	
-		}
-		catch (e) {
-			res = false;
-			wa_throwError('WA00001');
-		}
+		if (type === "edit") {
+			try {
+				// Retreive the departement value from the header
+				previousSelectedDepartment = nlapiGetFieldValue('department');
 		
+			}
+			catch (e) {
+				res = false;
+				wa_throwError('WA00001');
+			}
+		}
 	   
 	}
 
