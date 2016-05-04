@@ -25,6 +25,7 @@ var previousSOSelectedDepartment=""
 	 * @returns {Void}
 	 */
 	function wa_SOInitPage(type){
+		var res;
 		
 		try {
 			// Retreive the departement value from the header
