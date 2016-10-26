@@ -215,8 +215,8 @@ function WAInventoryAdjustment(type, name, linenum){
 						return false;
 					}
 					// Test if we have a value
-					if ((platesizesm != null) && (platesizesm != undefined) && (platesizesm !=0)) {
-			//			alert("Plate Size:" + platesizesm);
+					if ((platesizesm != null) && (platesizesm != undefined) && (platesizesm !=0.0) && (!isNaN(platesizesm)))  {
+						//alert("Debug info : Plate Size:" + platesizesm);
 
 						// Do we need to test if consumption is negative?
 						
@@ -245,12 +245,38 @@ function WAInventoryAdjustment(type, name, linenum){
 					}	
 					else {
 						wa_throwAlert('WA00011');
+						nlapiSetCurrentLineItemValue('inventory','custcol_wag_adjust_qty_sm',"");
 						return false;
 					}
 				break;
-		
+				case "item":
+					// Get the Item ID
+					itemID = nlapiGetCurrentLineItemValue('inventory','item');
+					// alert("ItemID :"+ itemID);
+					
+					//Check if the Item type is the good one
+					// get the current plate size
+					try {
+						platesizesm = parseFloat(nlapiLookupField('item', itemID, 'custitem_nbs_platesqm'));
+					}
+					catch (e){
+						wa_throwAlert('WA00010');
+						return false;
+					}
+					if ((platesizesm == null) || (platesizesm == undefined) || (platesizesm ==0) || (isNaN(platesizesm))) {
+						nlapiDisableLineItemField('inventory','custcol_wag_adjust_qty_sm',true);
+						nlapiDisableLineItemField('inventory','adjustqtyby',false);
+					}
+					else
+					{
+						nlapiDisableLineItemField('inventory','custcol_wag_adjust_qty_sm',false);
+						nlapiDisableLineItemField('inventory','adjustqtyby',true);
+					}
+					
+				break;
 			}
 		break;
+
 		case null:
 			switch (name) {
 				case 'department':

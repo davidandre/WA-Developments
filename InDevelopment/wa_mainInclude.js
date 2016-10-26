@@ -112,7 +112,7 @@ wa_errors.WA00010 = 'WA Sales Order - Defaulting Departement : Departement is em
 wa_errors.WA00010 = 'WA Inventory Adjustment for Plates - Error retreiving the plate size';
 
 //Alert that the plate size is = 0
-wa_errors.WA00011 = 'WA Inventory Adjustment for Plates - Plate size is empty';
+wa_errors.WA00011 = 'WA Inventory Adjustment for Plates - This item does not have a square meter value. Please use the standard Adjustement Qty field';
 
 // Try to consumme more size than the plate is
 wa_errors.WA00012 = 'WA Inventory Adjustment for Plates - Plate size is smaller than what you want to use';
