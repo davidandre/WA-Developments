@@ -1,0 +1,418 @@
+<?xml version="1.0"?><!DOCTYPE pdf PUBLIC "-//big.faceless.org//report" "report-1.1.dtd">
+<pdf>
+ 	<#if record.subsidiary == "Injection Alloys Inc.">
+      	<#global powdergm = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_powderfilling_imper@label />
+      	<#global lborkg = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_lb@label />
+        <#global lborgr = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_lb@label />
+      	<#global ftorm = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_ft@label />
+      	<#global ftormm = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_ft@label />
+    <#else>
+      	<#global powdergm = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_powderfilling@label />
+      	<#global lborkg = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_kg@label />
+        <#global lborgr = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_gr@label />
+      	<#global ftorm = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_meter@label />
+        <#global ftormm = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_millimeter@label />
+      </#if>
+
+<head>
+<#if .locale == "ru_RU">
+    <link name="verdana" type="font" subtype="opentype" src="${nsfont.verdana}" src-bold="${nsfont.verdana_bold}" bytes="2" />
+</#if>
+    <macrolist>
+        <macro id="nlheader">
+            <table class="header" style="width: 100%;"><tr>
+	<td rowspan="3"><#if subsidiary.custrecord_nbs_printlogouri?length != 0><img src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_printlogouri}" style="float: left; margin: 7px; width: 66px; height: 100px;" /></#if> <span class="nameandaddress">${subsidiary.name}</span></td>
+	<td align="right"><span class="title">${record.custbody_wag_label_trackingsheet@label}</span></td>
+	</tr>
+	<tr>
+	<td align="right"><span class="number">#${record.tranid}</span></td>
+	</tr>
+</table>
+        </macro>
+        <macro id="nlfooter">
+            <table class="footer" style="width: 100%;"><tr>
+	<td><barcode codetype="code128" showtext="true" value="${record.tranid}"/></td>
+	<td align="right"><pagenumber/> of <totalpages/></td>
+	</tr></table>
+        </macro>
+    </macrolist>
+    <style type="text/css">table {
+        <#if .locale == "zh_CN">
+            font-family: stsong, sans-serif;
+        <#elseif .locale == "zh_TW">
+            font-family: msung, sans-serif;
+        <#elseif .locale == "ja_JP">
+            font-family: heiseimin, sans-serif;
+        <#elseif .locale == "ko_KR">
+            font-family: hygothic, sans-serif;
+        <#elseif .locale == "ru_RU">
+            font-family: verdana;
+        <#else>
+            font-family: sans-serif;
+        </#if>
+            font-size: 9pt;
+            table-layout: fixed;
+        }
+        th {
+            font-weight: bold;
+            font-size: 8pt;
+            vertical-align: middle;
+            padding: 5px 6px 3px;
+            background-color: #e3e3e3;
+            color: #333333;
+        }
+        td {
+            padding: 4px 6px;
+        }
+        b {
+            font-weight: bold;
+            color: #333333;
+        }
+        table.header td {
+            padding: 0;
+            font-size: 10pt;
+        }
+        table.footer td {
+            padding: 0;
+            font-size: 8pt;
+        }
+        table.itemtable th {
+            padding-bottom: 10px;
+            padding-top: 10px;
+        }
+        table.body td {
+            padding-top: 2px;
+        }
+        span.title {
+            font-size: 28pt;
+        }
+        span.number {
+            font-size: 16pt;
+        }
+        span.itemname {
+            font-weight: bold;
+            line-height: 150%;
+        }
+      	table.wodetails {
+        	width: 100%;
+        	height: 100%;
+      	}
+      	table.wodetails tr {
+          border-bottom: 1px solid #111111;
+          height: 33px;
+        }
+
+       table.wodetails th.split {
+          font-weight: bold;
+          width: 120px;
+          background-color: transparent;
+          border-right: 1px solid #111111;
+        }
+       table.wodetails th {
+          font-weight: bold;
+          width: 120px;
+          background-color: transparent;
+        }
+
+        table.wodetails td {
+          font-weight: normal;
+        }
+
+       table.wodetails td.split {
+          font-weight: normal;
+          border-right: 1px solid #111111;
+        }
+      	table.woheader {
+        	width: 100%;
+        	height: 100%;
+      	}
+      	table.woheader tr {
+          border: 1px solid #111111;
+          height: 35px;
+        }
+
+       table.woheader th {
+          font-weight: bold;
+          width: 120px;
+          background-color: transparent;
+          border: 1px solid #111111;
+        }
+        table.woheader td {
+          font-weight: normal;
+        }
+
+        table.wosubheader {
+        	width: 100%;
+        	height: 100%;
+      	}
+      	table.wosubheader tr {
+          height: 35px;
+        }
+
+       table.wosubheader th {
+          font-weight: bold;
+          width: 120px;
+          background-color: transparent;
+          border: 1px solid #111111;
+         word-break: keep-all;
+        }
+       table.wosubheader td {
+          font-weight: normal;
+          width: 120px;
+          background-color: transparent;
+          border: 1px solid #111111;
+        }
+
+      	hr {
+            width: 100%;
+            color: #d3d3d3;
+            background-color: #d3d3d3;
+            height: 1px;
+        }
+      hr.pagebreak {
+        color: #FFFFFF;
+        page-break-after: always;
+		width: 100%;
+      }
+</style>
+</head>
+<body header="nlheader" header-height="11%" footer="nlfooter" footer-height="10pt" padding="0.5in 0.5in 0.5in 0.5in" size="A4">
+<!--  <hr class="pagebreak" /> -->
+<table class="wodetails" >
+  <tr>
+    <th colspan="8" style="font-size:12pt;"></th>
+    <th colspan="2">${record.custbody_wag_label_date@label}: </th>
+    <td colspan="2">${record.trandate}</td>
+  </tr>
+  <tr>
+  	<th colspan="4">${record.entity@label}</th>
+    <th colspan="2">${record.job@label}</th>
+    <th colspan="4">${record.tranid@label}</th>
+    <th colspan="2">${record.enddate@label}</th>
+  </tr>
+  <tr>
+    <td colspan="4">${record.entity}</td>
+    <td colspan="2">${record.job}</td>
+    <td colspan="4">${record.tranid}</td>
+    <td colspan="2">${record.enddate}</td>
+  </tr>
+
+
+  	<#list record.item as item>
+      <#if item_index==0>
+	<tr>
+		<th colspan="4"  class="split">${item.quantity@label}</th>
+		<th colspan="8">${item.item@label}</th>
+	</tr>
+    </#if>
+      <tr>
+			<td style="align:right;" colspan="4" class="split">${item.quantity}</td>
+			<td colspan="4"><span class="itemname">${item.item}</span></td>
+			<td colspan="4">
+              ${item.description}
+
+              <#global ivdetails = "" />
+              <#global separ = ": " />
+              <#global ivdetails = item.custcol_wag_ivdetails />
+
+              <#if ivdetails?has_content>
+                  <#list ivdetails?split("!") as ivline>
+                    <#if ivline?has_content>
+                      		<#list ivline?split(";") as val>
+                              	<#if val_index==0>
+									${separ}${val}
+                                    <#global separ=" / " />
+                                </#if>
+                        	</#list>
+                    </#if>
+                  </#list>
+                </#if>
+            </td>
+	</tr>
+	</#list>
+
+  <tr>
+  	<th colspan="3">${record.custbody_wag_numberofcoils@label}</th>
+  	<td colspan="2" style="align:right;">${record.custbody_wag_numberofcoils}</td>
+    <td colspan="1" style="align:right;width:50px;"  class="split">${record.custbody_wag_label_pieces@label}</td>
+    <th colspan="3">${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_coillength@label}</th>
+  	<td colspan="2" style="align:right;width:*;">${record.custbody_wag_coil_length} </td>
+    <td colspan="1" style="align:right;width:50px;">${ftorm}</td>
+  </tr>
+  <tr>
+    <th colspan="3">${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_powder_ca@label}</th>
+  	<td colspan="2" style="align:right;width:*;">${record.custbody_wag_powder}</td>
+    <td colspan="1" style="align:right;width:50px;" class="split">${lborgr}/${ftorm}</td>
+    <th colspan="3">${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_diameter@label} (${ftormm})</th>
+  	<td colspan="2" style="align:right;width:*;">${record.custbody_wag_diameter}</td>
+    <td colspan="1" style="align:right;width:50px;">${ftormm}</td>
+  </tr>
+
+    <tr style="border-bottom: none;">
+    <th colspan="12">${record.custbody_wag_label_dimensions@label}:</th>
+  </tr>
+  <tr>
+    <th colspan="4">${record.custbody_wag_thickness@label}</th>
+  	<td colspan="2" class="split">${record.custbody_wag_thickness}</td>
+    <th colspan="4">${record.custbody_wag_external_diam@label}</th>
+  	<td colspan="2">${record.custbody_wag_external_diam}</td>
+  </tr>
+  <tr>
+  <th colspan="4">${record.custbody_wag_coppersleeves@label}</th>
+  <td colspan="2" class="split"><#if record.custbody_wag_coppersleeves>${record.custbody_wag_label_yes@label}<#else>${record.custbody_wag_label_no@label}</#if></td>
+  <td colspan="6">${record.custbody_wag_coppersleevesdetails}</td>
+  </tr>
+  <tr>
+    <th colspan="4">${record.custbody_nbs_axis@label}</th>
+  	<td colspan="8">${record.custbody_nbs_axis}</td>
+  </tr>
+  <tr>
+    <th colspan="4">${record.custbody_wag_shape@label}</th>
+  	<td colspan="8">${record.custbody_wag_shape}</td>
+  </tr>
+  <tr>
+    <th colspan="4">${record.custbody_wag_wire_forming_identificati@label}</th>
+    <td colspan="2" class="split"><#if record.custbody_wag_wire_forming_identificati>${record.custbody_wag_label_yes@label}<#else>${record.custbody_wag_label_no@label}</#if></td>
+      <td colspan="6">${record.custbody_wag_wire_ident_details}</td>
+  </tr>
+  <tr>
+    <th colspan="3">${record.custbody_nbs_colour@label}</th>
+  	<td colspan="2" class="split">${record.custbody_nbs_colour}</td>
+    <th colspan="3">${record.custbody_wag_powdertype@label}</th>
+  	<td colspan="2" class="split">${record.custbody_wag_powdertype}</td>
+    <th colspan="1">${record.custbody_wag_wire@label}</th>
+  	<td colspan="1">${record.custbody_wag_wire}</td>
+  </tr>
+  <tr>
+    <th colspan="3">${record.custbody_wag_pallet_type@label}</th>
+  	<td  colspan="2" class="split">${record.custbody_wag_pallet_type}</td>
+    <th colspan="3">${record.custbody_wag_transp_film@label}</th>
+    <td colspan="4"><#if record.custbody_wag_transp_film>${record.custbody_wag_label_yes@label}<#else>${record.custbody_wag_label_no@label}</#if></td>
+  </tr>
+    <tr>
+    <th colspan="3">${record.custbody_wag_sidedischarge@label}</th>
+  	<td  colspan="2" class="split">${record.custbody_wag_sidedischarge}</td>
+    <th colspan="3">${record.custbody_wag_back_charge@label}</th>
+  	<td colspan="4">${record.custbody_wag_back_charge}</td>
+  </tr>
+ <tr>
+    <th colspan="4">${record.custbody_wag_outputcontrol@label}</th>
+  	<td colspan="8" >${record.custbody_wag_outputcontrol}</td>
+  </tr>
+<tr>
+    <th colspan="4">${record.custbody_wag_shipping_weight@label}</th>
+  	<td colspan="8" >${record.custbody_wag_shipping_weight}</td>
+  </tr>
+<tr>
+    <th colspan="4">${record.custbody_wag_delivery_note_nr@label}</th>
+  	<td colspan="8" >${record.custbody_wag_delivery_note_nr}</td>
+  </tr>
+<tr>
+    <th colspan="4">${record.custbody_wag_invoice_nr@label}</th>
+  	<td colspan="8" >${record.custbody_wag_invoice_nr}</td>
+  </tr>
+<tr>
+    <th colspan="10" style="align:right;">${record.custbody_wag_signature@label}</th>
+  <td colspan="2"></td>
+  </tr>
+  <tr>
+    <th colspan="4">${record.custbody_wag_remarks@label}</th>
+    <td colspan="8">${record.custbody_wag_remarks}</td>
+  </tr>
+  <tr>
+    <th colspan="4">${record.custbody_wag_shipping_date@label}</th>
+    <td colspan="4">${record.custbody_wag_shipping_date}</td>
+    <th colspan="2" style="align:right;">${record.custbody_wag_signature@label}</th>
+    <td colspan="2"></td>
+  </tr>
+  </table>
+  <!-- Second page to be filled manually by production people -->
+    <hr class="pagebreak" />
+	<table class="woheader" >
+  		<tr>
+          <th colspan="4">${record.custbody_wag_label_furnitures@label}</th>
+    	</tr>
+      	<tr>
+          <th>${record.custbody_wag_wire@label}</th>
+          <th> ${lborgr}/${ftorm}:</th>
+          <th>&#248; A:</th>
+          <th>&#248; B:</th>
+      	</tr>
+      	<tr>
+          	<th>${record.custbody_wag_label_strip@label}</th>
+          	<th colspan="2">${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_width@label} [${ftormm}]:</th>
+          	<th>${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_thickness@label} [${ftormm}]:</th>
+      	</tr>
+	</table>
+  <!-- Last page -->
+  	<table class="wosubheader">
+    	<tr>
+          <th style="width:7%;">${record.custbody_wag_label_notes@label}</th>
+          <td style="width:55%;" colspan="10"></td>
+          <td style="width:11%;" colspan="2"></td>
+          <th colspan="3" style="width:27%;">${record.custbody_wag_label_filledwire@label} [${ftorm}]</th>
+      	</tr>
+      	<tr>
+          <td style="width:7%;"></td>
+          <td style="width:4%;"></td>
+          <td style="width:7%;"></td>
+          <td style="width:11%;" colspan="2"></td>
+          <td style="width:11%;" colspan="2"></td>
+          <td style="width:11%;" colspan="2"></td>
+          <td style="width:11%;" colspan="2"></td>
+          <td style="width:11%;" colspan="2"></td>
+          <th colspan="3" style="width:27%;">${record.custbody_wag_label_scrap@label}</th>
+      </tr>
+      	<tr>
+          <td style="border:none;width:7%;"></td>
+          <td style="border:none;width:4%;"></td>
+          <td style="border:none;width:7%;"></td>
+          <td style="align:center;border:none;width:11%;" colspan="2"><img src="${companyinformation.custrecord_wag_baseurl}/core/media/media.nl?id=1287&amp;c=4129093&amp;h=52e5e275b44a53ebd91c" style="height:20px;"/></td>
+          <td style="align:center;border:none;width:11%;" colspan="2"><img src="${companyinformation.custrecord_wag_baseurl}/core/media/media.nl?id=1287&amp;c=4129093&amp;h=52e5e275b44a53ebd91c" style="height:20px;"/></td>
+          <td style="align:center;border:none;width:11%;" colspan="2"><img src="${companyinformation.custrecord_wag_baseurl}/core/media/media.nl?id=1287&amp;c=4129093&amp;h=52e5e275b44a53ebd91c" style="height:20px;"/></td>
+          <td style="align:center;border:none;width:11%;" colspan="2"><img src="${companyinformation.custrecord_wag_baseurl}/core/media/media.nl?id=1287&amp;c=4129093&amp;h=52e5e275b44a53ebd91c" style="height:20px;"/></td>
+          <td style="align:center;border:none;width:11%;" colspan="2"><img src="${companyinformation.custrecord_wag_baseurl}/core/media/media.nl?id=1287&amp;c=4129093&amp;h=52e5e275b44a53ebd91c" style="height:20px;"/></td>
+          <th colspan="3"  style="border:none;width:27%;">${record.custbody_wag_label_withdrawal@label}:</th>
+      </tr>
+      <tr>
+        <th style="width:7%;">${record.custbody_wag_label_date@label}</th>
+        <th style="width:4%;">${record.custbody_wag_label_team@label}</th>
+        <th style="width:7%;">${record.custbody_wag_label_emp@label}</th>
+        <th style="width:11%;" colspan="2">${record.custbody_wag_label_strip@label} [${lborkg}]</th>
+        <th style="width:11%;" colspan="2">${record.wag_powder@label} 1 [${lborkg}]</th>
+        <th style="width:11%;" colspan="2">${record.wag_powder@label} 2 [${lborkg}]</th>
+        <th style="width:11%;" colspan="2">${record.wag_powder@label} 3 [${lborkg}]</th>
+        <th style="width:11%;" colspan="2">${record.wag_powder@label} 4 [${lborkg}]</th>
+        <th style="width:4%;" >${record.custbody_wag_numberofcoils@label}</th>
+        <th style="width:25%;" colspan="2">${record.custbody_wag_label_numberofcoils@label}<br /> ${record.custbody_wag_label_from@label}-${record.custbody_wag_label_to@label}</th>
+      </tr>
+      <#list 1..15 as i>
+      <tr>
+        <th style="width:7%;"></th>
+        <th style="width:4%;"></th>
+        <th style="width:7%;"></th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:11%;" colspan="2"> </th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:4%;"></th>
+        <th style="width:25%;" colspan="2"></th>
+      </tr>
+     </#list>
+      <tr>
+        <th style="width:7%;"></th>
+        <th style="width:4%;"></th>
+        <th style="width:7%;"></th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:11%;" colspan="2"> </th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:11%;" colspan="2"></th>
+        <th style="width:27%;" colspan="3">${record.custbody_wag_label_returnstock@label}</th>
+      </tr>
+  	</table>
+
+  	
+</body>
+</pdf>

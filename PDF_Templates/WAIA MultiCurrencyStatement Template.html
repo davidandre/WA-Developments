@@ -1,0 +1,917 @@
+<?xml version="1.0"?>
+<!DOCTYPE pdf PUBLIC "-//big.faceless.org//report" "report-1.1.dtd">
+<pdfset>
+	<#if statements??>
+		<#list statements as statement>
+			<pdf>
+				<head>
+					<#if .locale == "ru_RU">
+						<link name="verdana" type="font" subtype="opentype" src="${nsfont.verdana}" src-bold="${nsfont.verdana_bold}" bytes="2" />
+					</#if>
+					<macrolist>
+			<macro id="nlheaderWA">
+				<table style="width: 100%; font-size: 6pt;">
+					<tr>
+						<td width="39%" style="font-weight: bold; font-size: 15pt; text-transform: uppercase;">
+							<br />
+							<br />
+                          	<#if !statement_has_next && statement_index == 0>
+                           			${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_statementtitle@label}
+                            <#else>
+                           			${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_statementmultititle@label}
+							</#if>
+						</td>
+						<td width="11%" style="padding: 5px 5px 5px;">
+							<p align="right">
+    									${subsidiary.custrecord_wag_labels_translation.custrecord_wag_page_label@label} <pagenumber/> ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_pageof_label@label} <totalpages/>                         
+							</p>
+						</td>
+						<td width="35%" align="right">
+							<table style="font-size: 6pt;">
+								<tr>
+									<td style="font-family: 'Arial Narrow', Arial, sans-serif; font-size: 10pt; color: #5FAA67;">${subsidiary.name}</td>
+								</tr>
+								<#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+									<!-- Native -->
+									<#if subsidiary.custrecord_nbs_ntv_additionaladdress?has_content>
+										<tr>
+											<td>
+												${subsidiary.custrecord_nbs_ntv_additionaladdress}
+											</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>
+												${subsidiary.mainaddress_text}
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Tel: ${subsidiary.phone} Fax: ${subsidiary.fax}
+											</td>
+										</tr>
+									</#if>
+								<#else>
+									<!-- English -->
+									<#if subsidiary.custrecord_nbs_eng_additionaladdress?has_content>
+										<tr>
+											<td>${subsidiary.custrecord_nbs_eng_additionaladdress}</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>${subsidiary.mainaddress_text}</td>
+										</tr>
+										<tr>
+											<td>Tel: ${subsidiary.phone} ${subsidiary.fax@label}: ${subsidiary.fax}</td>
+										</tr>
+									</#if>
+								</#if>
+							</table>
+						</td>
+						<td width="15%" style="padding: 10px; padding-top: 0px;">
+						<!-- Prevents Preview Bug where there is no Logo URI Specified -->
+							<#if subsidiary.custrecord_nbs_printlogouri?has_content>
+								<img width="1in" height="1.67in" src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_printlogouri}" />
+							</#if>
+						</td>
+					</tr>
+				</table>
+			</macro>
+
+			<macro id="nlheaderIA">
+				<table style="width: 100%; font-size: 6pt;">
+					<tr>
+						<td width="39%" style="font-weight: bold; font-size: 15pt; text-transform: uppercase;">
+							<br />
+							<br />
+                          	<#if !statement_has_next && statement_index == 0>
+                           			${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_statementtitle@label}
+                            <#else>
+                           			${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_statementmultititle@label}
+							</#if>
+						</td>
+						<td width="11%" style="padding: 5px 5px 5px;">
+							<p align="right">
+                              ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_page_label@label} <pagenumber/> ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_pageof_label@label} <totalpages/>
+							</p>
+						</td>
+						<td width="15%" style="padding: 10px;">
+						<!-- Prevents Preview Bug where there is no Logo URI Specified -->
+							<#if subsidiary.custrecord_nbs_printlogouri?has_content>
+								<img width="1in" height="1.67in" src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_printlogouri}" />
+							</#if>
+						</td>
+						<td width="35%">
+							<table style="font-size: 6pt;">
+								<tr>
+									<td style="font-family: 'Arial Narrow', Arial, sans-serif; font-size: 10pt; color: #5FAA67;">${subsidiary.name}</td>
+								</tr>
+								<#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+									<!-- Native -->
+									<#if subsidiary.custrecord_nbs_ntv_additionaladdress?has_content>
+										<tr>
+											<td>
+												${subsidiary.custrecord_nbs_ntv_additionaladdress}
+											</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>
+												${subsidiary.mainaddress_text}
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Tel: ${subsidiary.phone} Fax: ${subsidiary.fax}
+											</td>
+										</tr>
+									</#if>
+								<#else>
+									<!-- English -->
+									<#if subsidiary.custrecord_nbs_eng_additionaladdress?has_content>
+										<tr>
+											<td>${subsidiary.custrecord_nbs_eng_additionaladdress}</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>${subsidiary.mainaddress_text}</td>
+										</tr>
+										<tr>
+											<td>Tel: ${subsidiary.phone} ${subsidiary.fax@label}: ${subsidiary.fax}</td>
+										</tr>
+									</#if>
+								</#if>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</macro>
+			<macro id="nlfooter">
+						<table style="border: 1px solid #111111; width: 100%; margin-top: 10px;">
+                          <tr>
+                            <th>
+                              	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_creditlimit@label}
+                            </th>
+                            <td>
+                              	${statement.CREDITLIMIT}
+                            </td>
+                            <th>
+                              ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_totallabel@label}
+                            </th>
+                            <td style="align:right;">
+                              	${statement.agingbal}
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>
+                              	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_paymentterms@label}
+                            </th>
+                          <td colspan="3">
+                            ${statement.terms}
+                          </td>
+                          </tr>
+                      </table>
+						<table class="aging" style="width: 100%; margin-top: 10px; border: 1px solid #111111; width: 100%; margin-top: 10px;">
+                          	<tr>
+                              <th colspan="6">${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_aging_title@label}</th>
+                          	</tr>
+							<tr>
+								<th>	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_current@label}</th>
+								<th>1-30</th>
+								<th>31-60</th>
+								<th>61-90</th>
+								<th> >90</th>
+							</tr>
+							<tr>
+								<td>${statement.aging1}</td>
+								<td>${statement.aging2}</td>
+								<td>${statement.aging3}</td>
+								<td>${statement.aging4}</td>
+								<td>${statement.aging5}</td>
+							</tr>
+						</table>
+				<table style="width: 100%; font-size: 8pt; text-align:center; align-content: center;">
+                  	<tr>
+                  	<th style="font-style: italic; align:center;">
+                      	<p style="align:center;">
+                      	<#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+									<!-- Native -->
+									Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig
+						<#else>
+									<!-- English -->
+									This is computer generated statement. No signature is required.
+						</#if>
+
+                      </p>
+                      </th>
+                  </tr>
+                </table>
+
+        <!--  footer for ISO logo, bank info, sparky  -->
+			 <table style="width: 100%; font-size: 8pt; text-align:center; align-content: center;">
+					<tr>
+						<td width="28%">
+                          <p style="width: 100%; font-size: 6pt; text-align:left; vertical-align:middle;">
+                              <#if subsidiary.custrecord_nbs_certificationlogo?length != 0>
+                                  <img src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_certificationlogo}" style="display:inline; height: ${subsidiary.custrecordwag_certlogo_height}in; width: ${subsidiary.custrecord_wag_certlogo_width}in; vertical-align: middle;"/>
+                              </#if>
+                              <#if (subsidiary.custrecord_wag_certif_txt1?has_content)||(subsidiary.custrecord_wag_certif_txt2?has_content)>
+                                <p style="display:inline;vertical-align: middle;margin-left:0.05in;" >
+                                  ${subsidiary.custrecord_wag_certif_txt1} <br />
+                                  ${subsidiary.custrecord_wag_certif_txt2}
+                                </p>
+                              </#if>
+                            </p>
+						</td>
+
+						<td width="44%" style="font-size:6pt; text-align:center;" class="tdc">
+							<p style="align:center; vertical-align:bottom;">
+								<#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+								<!-- Native -->
+									<#if subsidiary.custrecord_nbs_ntv_bankinfo1?has_content>
+										${subsidiary.custrecord_nbs_ntv_bankinfo1}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_ntv_bankinfo2?has_content>
+										${subsidiary.custrecord_nbs_ntv_bankinfo2}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_ntv_bankinfo3?has_content>
+										${subsidiary.custrecord_nbs_ntv_bankinfo3}<br />
+									</#if>
+								<#else>
+								<!-- English -->
+									<#if subsidiary.custrecord_nbs_eng_bankinfo1?has_content>
+										${subsidiary.custrecord_nbs_eng_bankinfo1}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_eng_bankinfo2?has_content>
+										${subsidiary.custrecord_nbs_eng_bankinfo2}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_eng_bankinfo3?has_content>
+										${subsidiary.custrecord_nbs_eng_bankinfo3}<br />
+									</#if>
+								</#if>
+							</p>
+						</td>
+						<td width="28%" align="right">
+							<p style="font-size:5pt;text-align:right; vertical-align: middle;" width="100%">
+                            	<p style="display:inline;vertical-align: middle; text-align:left;" >
+                                  <#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                                    <!-- Native -->
+                                        ${subsidiary.custrecord_nbs_ntv_footertag}
+                                    <#else>
+                                    <!-- English -->
+                                        ${subsidiary.custrecord_nbs_eng_footertag}
+                                    </#if>
+                                 </p>
+                                  <#if subsidiary.custrecord_wag_sparky_icon_url?has_content>
+                                    <img display="inline" src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_wag_sparky_icon_url}" width="0.462in" height="0.5in" margin-left="0.1in"/>
+                                  </#if>
+                            </p>
+						</td>
+					</tr>
+				</table>
+			</macro>
+					</macrolist>
+					<style type="text/css">table {
+						<#if .locale == "zh_CN">
+							font-family: stsong, sans-serif;
+						<#elseif .locale == "zh_TW">
+							font-family: msung, sans-serif;
+						<#elseif .locale == "ja_JP">
+							font-family: heiseimin, sans-serif;
+						<#elseif .locale == "ko_KR">
+							font-family: hygothic, sans-serif;
+						<#elseif .locale == "ru_RU">
+							font-family: verdana;
+						<#else>
+							font-family: sans-serif;
+						</#if>
+							font-size: 9pt;
+							table-layout: fixed;
+							}
+						th {
+							 font-weight: bold;
+							 font-size: 8pt;
+							 vertical-align: middle;
+							 padding: 5px 6px 3px;
+							 color: #333333;
+						}
+						td {
+							padding: 4px 6px;
+						 }
+						b {
+							 font-weight: bold;
+							 color: #333333;
+						}
+						table.header td {
+							 padding: 0;
+							 font-size: 10pt;
+						}
+						table.footer td {
+							padding: 0;
+							 font-size: 8pt;
+						}
+						table.itemtable th {
+							 padding-bottom: 10px;
+							 padding-top: 10px;
+						}
+						table.body td {
+							 padding-top: 2px;
+						}
+						td.addressheader {
+							 font-weight: bold;
+							 font-size: 8pt;
+							 padding-top: 6px;
+							 padding-bottom: 2px;
+						}
+						td.address {
+							 padding-top: 0;
+						}
+						span.title {
+							 font-size: 28pt;
+						}
+						span.number {
+							 font-size: 16pt;
+						}
+						div.remittanceSlip {
+							 width: 100%;
+							 /* To ensure minimal height of remittance slip */
+							 height: 200pt;
+							 page-break-inside: avoid;
+							 page-break-after: avoid;
+						}
+						hr {
+							 border-top: 1px dashed #d3d3d3;
+							 width: 100%;
+							 color: #ffffff;
+							 background-color: #ffffff;
+							 height: 1px;
+                        }
+					</style>
+				</head>
+	<#if subsidiary.custrecord_ia_sub?string?capitalize  == subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_yes@label?capitalize>
+			<body header="nlheaderIA" header-height="2in" footer="nlfooter" footer-height="2.5in" padding="0.15in 0.5in 0.25in 0.5in" size="A4">
+      <#else>
+    	  <body header="nlheaderWA" header-height="2in" footer="nlfooter" footer-height="2.5in" padding="0.5in 0.5in 0.25in 0.5in" size="A4" background-image="${companyinformation.custrecord_wag_baseurl}${companyinformation.custrecord_wag_wa_header_strip_url}" background-position="left top" background-image-width="8.27in" background-image-height="0.5in" >
+	</#if>
+                    <table style="page-break-inside: avoid; width: 100%; margin-top: 2px;">
+                        <tr>
+                            <td colspan="20" style="border: 0px solid;  padding: 1;">
+                            </td>
+                            <td colspan="1"></td>
+                            <th colspan="5" style="border-left: 1px solid; border-top: 1px solid;border-bottom: 1px solid; padding: 1;">
+                                ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_date@label}:
+                            </th>
+                            <td colspan="15" style="border-right: 1px solid; border-top: 1px solid; border-bottom: 1px solid;  padding: 1;">
+                             ${statement.trandate}
+                          </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="20" rowspan="4" style=" border: 1px solid ; font-size: 8pt; padding: 2; color: #333333;">
+                                    ${statement.billaddress}
+                            </td>
+                            <td colspan="1"></td>
+                            <th colspan="6" style="border-left: 1px solid; border-top: 1px solid;padding: 2;font-size:9px; ">
+                                ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_vatregno@label}:
+                            </th>
+                            <td colspan="14" style="border-right: 1px solid; border-top: 1px solid; padding: 2;font-size:9px; ">
+                                ${customer.vatregnumber}
+                            </td>
+                       </tr>
+                      <tr>
+                            <td colspan="1"></td>
+                            <td colspan="6" style="border-left: 1px solid; padding: 2;font-size:9px; ">
+                                ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_accountno@label}:
+                            </td>
+                            <td colspan="14" style="border-right: 1px solid; padding: 2;font-size:9px; ">
+                              ${statement.ACCOUNTNUMBER}
+                            </td>
+                        </tr>
+                     <tr>
+                            <td colspan="1" ></td>
+                            <td colspan="20" rowspan="2" style="border-left: 1px solid; border-right: 1px solid; border-bottom: 1px solid; padding: 2;font-size:9px; ">
+                              <#if (statement.aging1?trim != statement.agingbal?trim)>
+                              	<span style="font-size:12pt; font-weight: bold; color: #FF0000;">
+                                	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_accountoverdue1@label}
+								</span>
+                              	<br />
+                              	<span style="font-size:normal; font-style: italic; color: #333333;">
+                                  <#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                                    Bitte an die vereinbarten Zahlungsbedingungen halten um eine Kontosperrung zu vermeiden.
+
+                                 <#else>
+									Please keep within the agreed payment terms as this will prevent the account being placed on Hold.
+                                 </#if>
+                               </span>
+                              </#if>
+                            </td>
+
+                      </tr>
+                    </table>
+
+					<#if statement.lines?has_content>
+						<table class="itemtable" style="width: 100%; margin-top: 10px;">
+							<!-- start items -->
+							<#list statement.lines as line>
+								<#if line_index==0>
+									<thead style="border: 1px solid #333333;">
+										<tr >
+											<th colspan="3" style="align:center;">
+                                              	<p style="align:center;">
+                                              		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_invoicedate@label}
+                                          		</p>
+                                          	</th>
+											<th colspan="8" style="align:center;">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_doctype@label} / ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_docno@label}
+                                          		</p>
+                                          	</th>
+											<th style="align:center;" colspan="4">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_duedate@label}
+                                          		</p>
+                                          	</th>
+											<th style="align:center;" colspan="8">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_invoiceamount@label}
+                                          		</p>
+                                          	</th>
+											<th style="align:center;" colspan="4">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_outstand_bal@label}
+                                          		</p>
+                                          </th>
+										</tr>
+									</thead>
+								</#if>
+								<tr>
+									<td colspan="3">${line.datecol}</td>
+									<td colspan="8">${line.description}</td>
+<!--									<td align="right" colspan="3">${line.charge}</td>
+									<td align="right" colspan="4">${line.payment}</td>  -->
+								<td align="right" colspan="4">${line.DUEDATE}</td>
+                              	<td align="right" colspan="8">${line.amountremaining}</td>
+									<td align="right" colspan="4">${line.BALANCE}</td>
+								</tr>
+							</#list>
+							<!-- end items -->
+                      	</table>
+					</#if>
+					<!-- Foot info -->
+				</body>
+			</pdf>
+		</#list>
+	<#elseif record??>
+	<!-- Single Currency first -->
+		<pdf>
+			<head>
+				<#if .locale == "ru_RU">
+					<link name="verdana" type="font" subtype="opentype" src="${nsfont.verdana}" src-bold="${nsfont.verdana_bold}" bytes="2" />
+				</#if>
+				<macrolist>
+			<macro id="nlheaderWA">
+				<table style="width: 100%; font-size: 6pt;">
+					<tr>
+						<td width="39%" style="font-weight: bold; font-size: 15pt; text-transform: uppercase;">
+							<br />
+							<br />
+                           ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_statementtitle@label}
+						</td>
+						<td width="11%" style="padding: 5px 5px 5px;">
+							<p align="right">
+                              ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_page_label@label} <pagenumber/> ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_pageof_label@label} <totalpages/>
+							</p>
+						</td>
+						<td width="35%" align="right">
+							<table style="font-size: 6pt;">
+								<tr>
+									<td style="font-family: 'Arial Narrow', Arial, sans-serif; font-size: 10pt; color: #5FAA67;">${subsidiary.name}</td>
+								</tr>
+								<#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+									<!-- Native -->
+									<#if subsidiary.custrecord_nbs_ntv_additionaladdress?has_content>
+										<tr>
+											<td>
+												${subsidiary.custrecord_nbs_ntv_additionaladdress}
+											</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>
+												${subsidiary.mainaddress_text}
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Tel: ${subsidiary.phone} Fax: ${subsidiary.fax}
+											</td>
+										</tr>
+									</#if>
+								<#else>
+									<!-- English -->
+									<#if subsidiary.custrecord_nbs_eng_additionaladdress?has_content>
+										<tr>
+											<td>${subsidiary.custrecord_nbs_eng_additionaladdress}</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>${subsidiary.mainaddress_text}</td>
+										</tr>
+										<tr>
+											<td>Tel: ${subsidiary.phone} ${subsidiary.fax@label}: ${subsidiary.fax}</td>
+										</tr>
+									</#if>
+								</#if>
+							</table>
+						</td>
+						<td width="15%" style="padding: 10px; padding-top: 0px;">
+						<!-- Prevents Preview Bug where there is no Logo URI Specified -->
+							<#if subsidiary.custrecord_nbs_printlogouri?has_content>
+								<img width="1in" height="1.67in" src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_printlogouri}" />
+							</#if>
+						</td>
+					</tr>
+				</table>
+			</macro>
+			<macro id="nlheaderIA">
+				<table style="width: 100%; font-size: 6pt;">
+					<tr>
+						<td width="39%" style="font-weight: bold; font-size: 15pt; text-transform: uppercase;">
+							<br />
+							<br />
+                           ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_statementtitle@label}
+						</td>
+						<td width="11%" style="padding: 5px 5px 5px;">
+							<p align="right">
+                              ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_page_label@label} <pagenumber/> ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_pageof_label@label} <totalpages/>
+							</p>
+						</td>
+						<td width="15%" style="padding: 10px;">
+						<!-- Prevents Preview Bug where there is no Logo URI Specified -->
+							<#if subsidiary.custrecord_nbs_printlogouri?has_content>
+								<img width="1in" height="1.67in" src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_printlogouri}" />
+							</#if>
+						</td>
+						<td width="35%">
+							<table style="font-size: 6pt;">
+								<tr>
+									<td style="font-family: 'Arial Narrow', Arial, sans-serif; font-size: 10pt; color: #5FAA67;">${subsidiary.name}</td>
+								</tr>
+								<#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+									<!-- Native -->
+									<#if subsidiary.custrecord_nbs_ntv_additionaladdress?has_content>
+										<tr>
+											<td>
+												${subsidiary.custrecord_nbs_ntv_additionaladdress}
+											</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>
+												${subsidiary.mainaddress_text}
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Tel: ${subsidiary.phone} Fax: ${subsidiary.fax}
+											</td>
+										</tr>
+									</#if>
+								<#else>
+									<!-- English -->
+									<#if subsidiary.custrecord_nbs_eng_additionaladdress?has_content>
+										<tr>
+											<td>${subsidiary.custrecord_nbs_eng_additionaladdress}</td>
+										</tr>
+									<#else>
+										<tr>
+											<td>${subsidiary.mainaddress_text}</td>
+										</tr>
+										<tr>
+											<td>Tel: ${subsidiary.phone} ${subsidiary.fax@label}: ${subsidiary.fax}</td>
+										</tr>
+									</#if>
+								</#if>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</macro>
+			<macro id="nlfooter">
+              					</table>
+						<table style="border: 1px solid #111111; width: 100%; margin-top: 10px;">
+                          <tr>
+                            <th>
+                              	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_creditlimit@label}
+                            </th>
+                            <td>
+                              ${record.CREDITLIMIT}
+                            </td>
+                            <th>
+                              ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_totallabel@label}
+                            </th>
+                            <td style="align:right;">
+                              	${record.agingbal}
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>
+                              	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_paymentterms@label}
+                            </th>
+                          <td colspan="3">
+                            ${record.terms}
+                          </td>
+                          </tr>
+                      </table>
+						<table class="aging" style="width: 100%; margin-top: 10px; border: 1px solid #111111; width: 100%; ">
+							<tr>
+								<th>	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_current@label}</th>
+								<th>1-30</th>
+								<th>31-60</th>
+								<th>61-90</th>
+								<th> >90</th>
+							</tr>
+							<tr>
+								<td>${record.aging1}</td>
+								<td>${record.aging2}</td>
+								<td>${record.aging3}</td>
+								<td>${record.aging4}</td>
+								<td>${record.aging5}</td>
+							</tr>
+						</table>
+				<table style="width: 100%; font-size: 8pt; text-align:center; align-content: center;">
+                  	<tr>
+                  	<th style="font-style: italic; align:center;">
+                      	<p style="align:center;">
+                      	<#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+									<!-- Native -->
+									Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig
+						<#else>
+									<!-- English -->
+									This is computer generated statement. No signature is required.
+						</#if>
+
+                      </p>
+                      </th>
+                  </tr>
+                </table>
+        <!--  footer for ISO logo, bank info, sparky  -->
+			 <table style="width: 100%; font-size: 8pt; text-align:center; align-content: center;">
+					<tr>
+						<td width="28%">
+                          <p style="width: 100%; font-size: 6pt; text-align:left; vertical-align:middle;">
+                              <#if subsidiary.custrecord_nbs_certificationlogo?length != 0>
+                                  <img src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_certificationlogo}" style="display:inline; height: ${subsidiary.custrecordwag_certlogo_height}in; width: ${subsidiary.custrecord_wag_certlogo_width}in; vertical-align: middle;"/>
+                              </#if>
+                              <#if (subsidiary.custrecord_wag_certif_txt1?has_content)||(subsidiary.custrecord_wag_certif_txt2?has_content)>
+                                <p style="display:inline;vertical-align: middle;margin-left:0.05in;" >
+                                  ${subsidiary.custrecord_wag_certif_txt1} <br />
+                                  ${subsidiary.custrecord_wag_certif_txt2}
+                                </p>
+                              </#if>
+                            </p>
+						</td>
+
+						<td width="44%" style="font-size:5pt; text-align:center;" class="tdc">
+							<p style="align:center; vertical-align:bottom;">
+								<#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+								<!-- Native -->
+									<#if subsidiary.custrecord_nbs_ntv_bankinfo1?has_content>
+										${subsidiary.custrecord_nbs_ntv_bankinfo1}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_ntv_bankinfo2?has_content>
+										${subsidiary.custrecord_nbs_ntv_bankinfo2}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_ntv_bankinfo3?has_content>
+										${subsidiary.custrecord_nbs_ntv_bankinfo3}<br />
+									</#if>
+								<#else>
+								<!-- English -->
+									<#if subsidiary.custrecord_nbs_eng_bankinfo1?has_content>
+										${subsidiary.custrecord_nbs_eng_bankinfo1}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_eng_bankinfo2?has_content>
+										${subsidiary.custrecord_nbs_eng_bankinfo2}<br />
+									</#if>
+									<#if subsidiary.custrecord_nbs_eng_bankinfo3?has_content>
+										${subsidiary.custrecord_nbs_eng_bankinfo3}<br />
+									</#if>
+								</#if>
+							</p>
+						</td>
+						<td width="28%" align="right">
+							<p style="font-size:5pt;text-align:right; vertical-align: middle;" width="100%">
+                            	<p style="display:inline;vertical-align: middle; text-align:left;" >
+                                  <#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                                    <!-- Native -->
+                                        ${record.subsidiary.custrecord_nbs_ntv_footertag}
+                                    <#else>
+                                    <!-- English -->
+                                        ${record.subsidiary.custrecord_nbs_eng_footertag}
+                                    </#if>
+                                 </p>
+                                  <#if subsidiary.custrecord_wag_sparky_icon_url?has_content>
+                                    <img display="inline" src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_wag_sparky_icon_url}" width="0.462in" height="0.5in" margin-left="0.1in"/>
+                                  </#if>
+                            </p>
+						</td>
+					</tr>
+				</table>
+			</macro>
+				</macrolist>
+				<style type="text/css">table {
+					<#if .locale == "zh_CN">
+						font-family: stsong, sans-serif;
+					<#elseif .locale == "zh_TW">
+						font-family: msung, sans-serif;
+					<#elseif .locale == "ja_JP">
+						font-family: heiseimin, sans-serif;
+					<#elseif .locale == "ko_KR">
+						font-family: hygothic, sans-serif;
+					<#elseif .locale == "ru_RU">
+						font-family: verdana;
+					<#else>
+						font-family: sans-serif;
+					</#if>
+						font-size: 9pt;
+						table-layout: fixed;
+					}
+					th {
+						font-weight: bold;
+						font-size: 8pt;
+						vertical-align: middle;
+						padding: 5px 6px 3px;
+						background-color: #e3e3e3;
+						color: #333333;
+					}
+					td {
+						padding: 4px 6px;
+					}
+					b {
+						font-weight: bold;
+						color: #333333;
+					}
+					table.header td {
+						padding: 0;
+						font-size: 10pt;
+					}
+					table.footer td {
+						padding: 0;
+						font-size: 8pt;
+					}
+					table.itemtable th {
+						padding-bottom: 10px;
+						padding-top: 10px;
+					}
+					table.body td {
+						padding-top: 2px;
+					}
+					td.addressheader {
+						font-size: 8pt;
+						padding-top: 6px;
+						padding-bottom: 2px;
+					}
+					td.address {
+						padding-top: 0px;
+					}
+					span.title {
+						font-size: 28pt;
+					}
+					span.number {
+						font-size: 16pt;
+					}
+					hr {
+						border-top: 1px dashed #d3d3d3;
+						width: 100%;
+						color: #ffffff;
+						background-color: #ffffff;
+						height: 1px;
+					}
+				</style>
+			</head>
+	<#if record.subsidiary.custrecord_ia_sub?string?capitalize  == record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_yes@label?capitalize>
+			<body header="nlheaderIA" header-height="2in" footer="nlfooter" footer-height="2.5in" padding="0.15in 0.5in 0.25in 0.5in" size="A4">
+      	<#else>
+              <body header="nlheaderWA" header-height="2in" footer="nlfooter" footer-height="2.5in" padding="0.5in 0.5in 0.25in 0.5in" size="A4" background-image="${companyinformation.custrecord_wag_baseurl}${companyinformation.custrecord_wag_wa_header_strip_url}" background-position="left top" background-image-width="8.27in" background-image-height="0.5in" >
+
+	</#if>
+                    <table style="page-break-inside: avoid; width: 100%; margin-top: 2px;">
+                        <tr>
+                            <th colspan="5" style="border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; padding: 1;">
+                                ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_statementno@label}:
+
+                            </th>
+                            <td colspan="15" style="border-top: 1px solid; border-bottom: 1px solid; border-right: 1px solid; padding: 1;">
+                              ${record.tranid}
+                            </td>
+                            <td colspan="1"></td>
+                            <th colspan="5" style="border-left: 1px solid; border-top: 1px solid;border-bottom: 1px solid; padding: 1;">
+                                ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_date@label}:
+                            </th>
+                            <td colspan="15" style="border-right: 1px solid; border-top: 1px solid; border-bottom: 1px solid;  padding: 1;">
+                             ${record.trandate}
+                          </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="20" rowspan="4" style=" border: 1px solid ; font-size: 8pt; padding: 2; color: #333333;">
+                                    ${record.billaddress}
+                            </td>
+                            <td colspan="1"></td>
+                            <th colspan="6" style="border-left: 1px solid; border-top: 1px solid;padding: 2;font-size:9px; ">
+                                ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_vatregno@label}:
+                            </th>
+                            <td colspan="14" style="border-right: 1px solid; border-top: 1px solid; padding: 2;font-size:9px; ">
+                                ${customer.vatregnumber}
+                            </td>
+                       </tr>
+                        <tr>
+                            <td colspan="1"></td>
+                            <td colspan="6" style="border-left: 1px solid; padding: 2;font-size:9px; ">
+                                ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_accountno@label}:
+                            </td>
+                            <td colspan="14" style="border-right: 1px solid; padding: 2;font-size:9px; ">
+                              ${record.ACCOUNTNUMBER}
+                            </td>
+                        </tr>
+                     <tr>
+                            <td colspan="1" ></td>
+                            <td colspan="20" rowspan="2" style="border-left: 1px solid; border-right: 1px solid; border-bottom: 1px solid; padding: 2;font-size:9px; ">
+                            <#if (statement.aging1?trim != statement.agingbal?trim)>
+                              	<span style="font-size:12pt; font-weight: bold; color: #FF0000;">
+                                	${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_accountoverdue1@label}
+								</span>
+                              	<br />
+                              	<span style="font-size:normal; font-style: italic; color: #333333;">
+                                  <#if .locale?trim?lower_case == subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                                    Bitte an die vereinbarten Zahlungsbedingungen halten um eine Kontosperrung zu vermeiden.
+
+                                 <#else>
+									Please keep within the agreed payment terms as this will prevent the account being placed on Hold.
+                                 </#if>
+                               </span>
+                              </#if>
+                            </td>
+
+                      </tr>
+                      <tr>
+                            <td colspan="1" style="border-bottom: 1px solid;"></td>
+
+                       </tr>
+                    </table>
+
+				<#if record.lines?has_content>
+					<table class="itemtable" style="width: 100%; margin-top: 10px;">
+						<!-- start items -->
+						<#list record.lines as line>
+							<#if line_index==0>
+									<thead style="border: 1px solid #333333;">
+										<tr>
+											<th colspan="3" style="align:center;">
+                                              	<p style="align:center;">
+                                              		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_invoicedate@label}
+                                          		</p>
+                                          	</th>
+											<th colspan="8" style="align:center;">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_doctype@label} / ${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_docno@label}
+                                          		</p>
+                                          	</th>
+											<th style="align:center;" colspan="4">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_duedate@label}
+                                          		</p>
+                                          	</th>
+											<th style="align:center;" colspan="8">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_invoiceamount@label}
+                                          		</p>
+                                          	</th>
+											<th style="align:center;" colspan="4">
+												<p style="align:center;">
+                                            		${subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_outstand_bal@label}
+                                          		</p>
+                                          </th>
+										</tr>
+									</thead>
+							</#if>
+							<tr>
+								<td colspan="3">${line.datecol}</td>
+								<td colspan="8">${line.description}</td>
+<!--								<td align="right" colspan="3">${line.charge}</td>
+								<td align="right" colspan="4">${line.payment}</td>  -->
+								<td align="right" colspan="4">${line.DUEDATE}</td>
+                              	<td align="right" colspan="8">${line.amountremaining}</td>
+								<td align="right" colspan="4">${line.balance}</td>
+							</tr>
+						</#list>
+
+				</#if>
+			</body>
+		</pdf>
+	</#if>
+</pdfset>
