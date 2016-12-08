@@ -222,13 +222,7 @@
 								<tr>
 									<td align="left" style="font-weight: bold; color: #333333;">
 										<p style="text-align:left;">
-											<#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
-											<!-- Native -->
-												${record.subsidiary.custrecord_nbs_ntv_subtotal}
-											<#else>
-											<!-- English -->
-												${record.subsidiary.custrecord_nbs_eng_subtotal}
-											</#if>
+											${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_subtotal@label}
 										</p>
 									</td>
 									<td align="left" width="10%" style="font-weight: bold; color: #333333;">
@@ -238,7 +232,7 @@
                                       	<#if record.subtotal?has_content>
 											${record.subtotal?string["#,##0.00"]}
 										</#if>
-                                    </td>
+                           </td>
 								</tr>
 								<tr>
 									<td align="left" style="font-weight: bold; color: #333333;">
@@ -265,13 +259,7 @@
 								<tr>
 									<td align="left" style="font-weight: bold; color: #333333;">
 										<p style="text-align:left;">
-											<#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
-											<!-- Native -->
-												${record.subsidiary.custrecord_nbs_ntv_total}
-											<#else>
-											<!-- English -->
-												${record.subsidiary.custrecord_nbs_eng_total}
-											</#if>
+											${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_totallabel@label}
 										</p>
 									</td>
 									<td align="left" style="font-weight: bold; color: #333333;">
@@ -377,7 +365,7 @@
 	                  ${record.tranid}
                 </td>
 				<th colspan="4" style="border-top: 1px solid ;border-bottom: 1px solid ; padding: 1;">
-					${record.trandate@label}:
+					${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_date@label} :
 				</th>
 				<td colspan="4" style="border-top: 1px solid ;border-bottom: 1px solid ;border-right: 1px solid; padding: 1;">
 					${record.trandate}
@@ -547,7 +535,7 @@
 				<td colspan="1"></td>
 				<th colspan="8" style="border-left: 1px solid;border-bottom: 1px solid; border-top: 1px solid; padding: 2;">
 					<p style="vertical-align:middle;">
-						${record.location@label}:
+                      ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_po_location_warehouses@label} :
 					</p>
               	</th>
 				<td colspan="12" style="border-right: 1px solid;border-top: 1px solid; border-bottom: 1px solid;padding: 2;">

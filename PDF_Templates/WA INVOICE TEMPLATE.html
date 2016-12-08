@@ -227,7 +227,7 @@
                               ${record.discountrate}
                       </td>
                       <td align="right">${record.discounttotal}</td>
-                </tr>            
+                </tr>
              </#if>
             <!-- TAX TOTAL -->
             <tr>
@@ -334,7 +334,7 @@
         </macro>
     </macrolist>
     <style type="text/css">
-      table 
+      table
       {
         <#if .locale == "zh_CN">
             font-family: stsong, sans-serif;
@@ -380,8 +380,7 @@
 
 <table style="page-break-inside: avoid; width: 100%; margin-top: 10px;">
 	<tr>
-      <td colspan="12" style="border-left: 1px solid ;border-top: 1px solid ;border-bottom: 1px solid ;border-right: 1px solid; padding: 2;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_invoicerecordtitle@label}
-        &nbsp;${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_numberabbreviation@label} : ${record.tranid}
+      <td colspan="12" style="border-left: 1px solid ;border-top: 1px solid ;border-bottom: 1px solid ;border-right: 1px solid; padding: 2;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_invoice_no@label} : ${record.tranid}
       </td>
       <td colspan="8" style="border-top: 1px solid ;border-bottom: 1px solid ;border-right: 1px solid; padding: 2;">
         ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_date@label}: ${record.trandate}
@@ -410,7 +409,7 @@
 	</tr>
   	<tr>
 	  <td colspan="20" style="border-left: 1px solid ; border-bottom: 1px solid;border-right: 1px solid; padding: 2;">
-        ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_faxnumber@label}&nbsp;${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_numberabbreviation@label}: ${record.entity.fax}
+        ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_faxnumber@label}${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_numberabbreviation@label}: ${record.entity.fax}
       </td>
       <td colspan="1"></td>
 	  <td colspan="20" style="border-left: 1px solid ; border-bottom: 1px solid;border-right: 1px solid; padding: 2;">
@@ -428,7 +427,12 @@
       </td>
       <td colspan="1"></td>
 	  <td colspan="20" style="border-left: 1px solid ; border-bottom: 1px solid;border-right: 1px solid; padding: 2;">
-         ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_deliverynotenr@label}:  ${record.custbody_wag_fulfillnumber}
+         ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_deliverynotenr@label}:
+        <#if record.custbody_wag_deliverynotelink?has_content>
+             ${record.custbody_wag_deliverynotelink}
+		<#else>
+             ${record.custbody_wag_fulfillnumber}
+        </#if>
       </td>
 	</tr>
     <tr>
@@ -436,16 +440,24 @@
     </tr>
     <tr>
 	  <td colspan="20" style="border-left: 1px solid ;border-top: 1px solid ;  border-bottom: 1px solid;border-right: 1px solid; padding: 2;">
-        ${record.createdfrom}
+         <#global ordernum=record.createdfrom?string />
+         <#global possharp=record.createdfrom?index_of("#") />
+         <#global ordernum=ordernum?substring(possharp+1) />
+         ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_so_ordernumberlabel@label}: ${ordernum}
       </td>
       <td colspan="1"></td>
 	  <td colspan="20" style="border-left: 1px solid ;border-top: 1px solid ; border-bottom: 1px solid;border-right: 1px solid; padding: 2;">
-        ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_purchaseno@label}: ${record.otherrefnum}
+        ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_cmotherrefnum@label}: ${record.otherrefnum}
       </td>
 	</tr>
     <tr>
 	  <td colspan="20" style="border-left: 1px solid ; border-bottom: 1px solid;border-right: 1px solid; padding: 2;">
-        ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_vatregno@label}: ${record.vatregnum}
+        ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_vatregno@label}: 
+        <#if record.vatregnum?has_content>
+        	${record.vatregnum}
+		<#else>
+        	${record.custbody_wag_cust_taxid}
+        </#if>
       </td>
       <td colspan="1"></td>
 	  <td colspan="20" style="border-left: 1px solid ;border-bottom: 1px solid;border-right: 1px solid; padding: 2;">
@@ -500,12 +512,12 @@
         <#else>
         			<!-- IA PK WEIGHT UOM -->
    		     	<br />${decOrImp}
-        </#if>      
+        </#if>
       </td>
       <!-- ITEM NUMBER AND DESCRIPTION -->
       <td class="itemlist" align="left" colspan="16" style="border-left: 1px solid ;">    
 	 	<!-- Print WA item information  -->
-				<#if notprint_itemno=="F"  && itemnodesc_printmode !="2" && lineitem.custcol_nbs_printeditemnumber?has_content>
+				<#if notprint_itemno=="F"  && itemnodesc_printmode !="2" && lineitem.custcol_nbs_printeditemnumber?has_content && lineitem.itemtype !="Description">
 						<span style=" font-weight: bold; line-height: 150%; color: #333333;">
 							${lineitem.custcol_nbs_printeditemnumber}</span><br />
 		    	</#if>
@@ -514,7 +526,7 @@
 		    	</#if>
    	<!--  Print CUST. item info. -->
 		    	<!-- cust. item number  -->
-				<#if notprint_itemno=="F"  && (itemnodesc_printmode =="2" || itemnodesc_printmode =="3") >
+				<#if notprint_itemno=="F"  && (itemnodesc_printmode =="2" || itemnodesc_printmode =="3") && lineitem.itemtype !="Description">
 								<#if lineitem.custcol_wag_custitemnumber?has_content>
 										<span style=" font-weight: bold; line-height: 150%; color: #333333;">
 										${lineitem.custcol_wag_custitemnumber}</span><br />

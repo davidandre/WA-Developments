@@ -558,7 +558,6 @@
 					</tr>
 				</table>
 			</macro>
-                  
         <macro id="nlfooter">
             <table style="font-size:6pt; align: center; padding: 0in 0in 0.0in 0in;"><tr style="margin: 0in 0in 0.15in 0in;">
 	<td style="align:right;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_signed@label}:</td>
@@ -732,10 +731,16 @@
 	</tr>
 	<tr>
 	<th colspan="8" style="border-left: 1px solid;border-top: 1px solid; border-bottom: 1px solid; padding: 2;">
-	<p style="vertical-align:middle;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_deliveryterms@label}:</p>
+	<p style="vertical-align:middle;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_deliveryterms@label} :</p>
 	</th>
 	<td colspan="12" style="border-right: 1px solid; border-top: 1px solid; border-bottom: 1px solid; padding: 2;">
-	<p style="vertical-align:middle;">${record.custbody_nbs_printeddeliveryterms}</p>
+	<p style="vertical-align:middle;">
+        <#if record.custbody_wag_printed_deliverycity?has_content>
+				             ${record.custbody_wag_printed_deliverycity}
+        <#else>
+               	        ${record.custbody_nbs_printeddeliveryterms} 
+        </#if>
+	</p>
 	</td>
 	<td colspan="1">&nbsp;</td>
 	<td colspan="20">&nbsp;</td>
@@ -746,13 +751,13 @@
 <thead>
 	<tr>
 	<th align="center" colspan="11" style="border-left: 1px solid ;border-top: 1px solid ;border-bottom: 1px solid ;padding: 10px 6px;">
-	<p style="text-align: center;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_col_itemdesc_pack@label}</p>
+	<p style="text-align: center;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_itemdesc@label}</p>
 	</th>
 	<th align="center" colspan="5" style="border-left: 1px solid ;border-top: 1px solid ;border-bottom: 1px solid ;padding: 10px 6px;">
 	<p style="text-align: center;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_batchnr@label}</p>
 	</th>
 	<th align="center" colspan="3" style="border-left: 1px solid ;border-top: 1px solid ;border-bottom: 1px solid ;padding: 10px 6px;">
-	<p style="text-align: center;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_quantity@label} / ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_piece@label}</p>
+	<p style="text-align: center;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_quantity@label}</p>
 	</th>
 	<th align="center" colspan="3" style="border-left: 1px solid ;border-top: 1px solid ;border-bottom: 1px solid ;padding: 10px 6px;">
 	<p style="text-align: center;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_baseunit@label}</p>
@@ -775,7 +780,7 @@
           <tr>
             <td colspan="11" style="border-left: 1px solid ;">
 	 	<!-- Print WA item information  -->
-				<#if notprint_itemno=="F"  && itemnodesc_printmode !="2" && item.item?has_content>
+				<#if ((notprint_itemno=="F") && (itemnodesc_printmode !="2") && (item.item?has_content) && (item.itemtype !="Description"))>
 		     	<span style=" font-weight: bold; line-height: 150%; font-color: #000000;">
 							${item.item}</span><br />
 		    	</#if>
@@ -784,7 +789,7 @@
 		    	</#if>
    	<!--  Print CUST. item info. -->
 		    	<!-- cust. item number  -->
-				<#if notprint_itemno=="F"  && (itemnodesc_printmode =="2" || itemnodesc_printmode =="3") >
+				<#if ((notprint_itemno=="F")  && (itemnodesc_printmode =="2" || itemnodesc_printmode =="3") && (item.itemtype != "Description"))>
 								<#if item.custcol_wag_custitemnumber?has_content>
 								     	<span style=" font-weight: bold; line-height: 150%; font-color: #000000;">
 										${item.custcol_wag_custitemnumber}</span><br />
