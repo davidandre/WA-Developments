@@ -30,7 +30,7 @@ function UpdateFields(type){
 	var location = null;
 	var locaddr = null;
 	var incoterm = null;
-   
+    var shiptotax = null;
     
 	try {
 	    if (type=='create' || type=='edit') {
@@ -39,13 +39,16 @@ function UpdateFields(type){
 			
 				
 				// update Sales Territory on SO
+				// Retreive shipto Tax ID
 				
 				shipaddr = sorec.editSubrecord('shippingaddress');
 				if (shipaddr) {
 	                salester = shipaddr.getFieldValue('custrecord_wag_sales_territory');
 					sorec.setFieldValue('custbody_wag_sales_territory_so',salester);
-				}
-			
+					shiptotax = shipaddr.getFieldValue('custrecord_wag_localtaxid');
+					sorec.setFieldValue('custbody_wag_shiptotaxid',shiptotax);
+
+				}			
 			}
 
 			// Calculate Delivery Terms printing.
@@ -71,6 +74,10 @@ function UpdateFields(type){
 				pdterms = pdterms + " " + incoterm;
 				sorec.setFieldValue('custbody_wag_printed_deliverycity',pdterms);
 		    }
+			
+
+			
+			
 	    }
 	}
 	catch(e) {
