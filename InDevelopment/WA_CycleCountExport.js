@@ -161,18 +161,12 @@ function CycleCountListXML(request, response){
 	var subsidiaryname = inven.getFieldText('custrecord_wag_cyclecount_subsid');
 	var dept= inven.getFieldText('custrecord_wag_cyclecount_dept');
 	var today= new Date();
-	var filtersb = new Array();
-	filtersb[0] = new nlobjSearchFilter( 'location', null, 'anyOf', locationid);
-	var binsearch = nlapiSearchRecord('Bin', 'customsearch_wag_binssearch', filtersb);			
-	
-	var bins = new Array();
 	
 	var filteriv = new Array();
 
-	filteriv[0] = new nlobjSearchFilter( 'location', 'inventoryNumber', 'anyOf', locationid);
-	filteriv[1] = new nlobjSearchFilter( 'location', 'inventoryNumberBinOnHand', 'anyOf', locationid);
+	filteriv[0] = new nlobjSearchFilter( 'location', 'inventoryNumberBinOnHand', 'anyOf', locationid);
 	
-	var ivsearchresults = nlapiSearchRecord('Item', 'customsearch_wag_cyclecountlist', filteriv);
+	var ivsearchresults = nlapiSearchRecord('Item', 'customsearch_wag_cyclecountlist_3', filteriv);
 	
 	
 	// Header of XML XLS
@@ -194,7 +188,7 @@ function CycleCountListXML(request, response){
 	txt = txt + '<Style ss:ID="s63"><NumberFormat ss:Format="Short Date"/></Style>\n ';
 	txt = txt + '</Styles>\n ';
 	txt = txt + '<Worksheet ss:Name="cyclecount">\n ';
-	txt = txt + '<Table ss:ExpandedColumnCount="13" ss:ExpandedRowCount="585" x:FullColumns="1" x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">\n ';
+	txt = txt + '<Table x:FullColumns="1" x:FullRows="1" ss:DefaultColumnWidth="60" ss:DefaultRowHeight="15">\n ';
 	txt = txt + '<Row>\n ';
 	txt = txt + '<Cell><Data ss:Type="String">External ID</Data></Cell>\n ';
 	txt = txt + '<Cell><Data ss:Type="String">Adjustement Account</Data></Cell>\n ';
@@ -203,7 +197,9 @@ function CycleCountListXML(request, response){
 	txt = txt + '<Cell><Data ss:Type="String">Subsidiary</Data></Cell>\n ';
 	txt = txt + '<Cell><Data ss:Type="String">Adjustment Location</Data></Cell>\n ';
 	txt = txt + '<Cell><Data ss:Type="String">Department</Data></Cell>\n ';
-	txt = txt + '<Cell><Data ss:Type="String">Item Numer</Data></Cell>\n ';
+	txt = txt + '<Cell><Data ss:Type="String">Item Number</Data></Cell>\n ';
+	txt = txt + '<Cell><Data ss:Type="String">Item Description</Data></Cell>\n ';	
+	txt = txt + '<Cell><Data ss:Type="String">Diameter</Data></Cell>\n ';	
 	txt = txt + '<Cell><Data ss:Type="String">LotNo</Data></Cell>\n ';
 	txt = txt + '<Cell><Data ss:Type="String">Quantity on hand</Data></Cell>\n ';
 	txt = txt + '<Cell><Data ss:Type="String">Adjust Quantity By</Data></Cell>\n ';
@@ -212,71 +208,41 @@ function CycleCountListXML(request, response){
 	txt = txt + '</Row>\n ';
 	
 	
-	filtersb[0] = new nlobjSearchFilter( 'location', null, 'anyOf', locationid);
-	var binsearch = nlapiSearchRecord('Bin', 'customsearch_wag_binssearch', filtersb);
 	var itemid ='';
+	var itemdesc ='';	
 	var newitem = 0;
 	var itemid = '';
 	var lotnum = '';
 	var qty = 0;
 	var stk ='';
 	var binn = '';
-	
-	if (binsearch)
+	var diam='';
+
+	for (var i = 0; ivsearchresults  != null && i < ivsearchresults.length;i++)
 	{
-
-		for (var i = 0; ivsearchresults  != null && i < ivsearchresults.length;i++)
-		{
-			var iv = ivsearchresults[i];
-			var curbin = iv.getText( 'binnumber','inventoryDetail' );
-			if (curbin)
-			{
-					var good = 0;
-					for (var j=0; binsearch != null && j <binsearch.length && good==0 ;j++)
-					{
-						var bin = binsearch[j];
-						var binnumber = bin.getValue('binnumber');
-						if (binnumber == curbin)
-						{
-							good = 1;
-						} else 
-							good = 0;
-					}
-					if (good == 1) 
-					{
-						if ((itemid == iv.getValue('itemid')) && (lotnum ==iv.getText('inventorynumber','inventoryDetail')) && (binn==iv.getText('binnumber','inventoryDetail')))
-							newitem = 0;
-						else
-							newitem = 1;
-						if (newitem == 1) {
-							if (itemid!='') {
-								if (qty != 0) {
-									txt = txt + '<Row>\n<Cell ss:StyleID="s62"/>\n';
-									txt = txt + '<Cell ss:Index="3" ss:StyleID="s63"><Data ss:Type="String">' + today.toISOString().substring(0,9) + '</Data></Cell>\n';
-									txt = txt + '<Cell ss:Index="5"><Data ss:Type="String">' + subsidiaryname + '</Data></Cell>\n';
-									txt = txt + '<Cell><Data ss:Type="String">' + location + '</Data></Cell>\n';
-									txt = txt + '<Cell><Data ss:Type="String">' + dept + '</Data></Cell>\n';
-									txt = txt + '<Cell><Data ss:Type="String">' + itemid + '</Data></Cell>\n';
-									txt = txt + '<Cell><Data ss:Type="String">' + lotnum + '</Data></Cell>\n';
-									txt = txt + '<Cell><Data ss:Type="Number">' + qty + '</Data></Cell>\n';
-									txt = txt + '<Cell ss:Index="12"><Data ss:Type="String">' + stk + '</Data></Cell>\n';
-									txt = txt + '<Cell><Data ss:Type="String">' + binn + '</Data></Cell>\n';
-									txt = txt + '</Row>\n';
-								}
-								//qty = parseFloat(iv.getValue('quantity','inventoryDetail'));
-							}
-							qty = parseFloat(iv.getValue('quantity','inventoryDetail'));
-						} else
-								qty = qty + parseFloat(iv.getValue('quantity','inventoryDetail'));
-
-						itemid = iv.getValue('itemid');
-						lotnum = iv.getText('inventorynumber','inventoryDetail');
-						stk =iv.getText('stockunit');
-						binn = iv.getText('binnumber','inventoryDetail');
-						
-
-					}
-			}
+		var iv = ivsearchresults[i];
+		qty = parseFloat(iv.getValue('quantityonhand','inventoryNumberBinOnHand','GROUP'));
+		itemid = iv.getValue('itemid',null,'GROUP');
+		itemdesc = iv.getValue('displayname',null,'GROUP');
+		lotnum = iv.getValue('inventorynumber','inventoryNumberBinOnHand','GROUP');
+		stk = iv.getText('stockunit',null,'GROUP');
+		binn = iv.getText('binnumber','inventoryNumberBinOnHand','GROUP');
+		diam  = iv.getText('custitem_nbs_segment4',null,'GROUP');
+		
+		if (qty != 0) {
+			txt = txt + '<Row>\n<Cell ss:StyleID="s62"/>\n';
+			txt = txt + '<Cell ss:Index="3" ss:StyleID="s63"><Data ss:Type="String">' + today.toISOString().substring(0,10) + '</Data></Cell>\n';
+			txt = txt + '<Cell ss:Index="5"><Data ss:Type="String">' + subsidiaryname + '</Data></Cell>\n';
+			txt = txt + '<Cell><Data ss:Type="String">' + location + '</Data></Cell>\n';
+			txt = txt + '<Cell><Data ss:Type="String">' + dept + '</Data></Cell>\n';
+			txt = txt + '<Cell><Data ss:Type="String">' + itemid + '</Data></Cell>\n';
+			txt = txt + '<Cell><Data ss:Type="String">' + itemdesc + '</Data></Cell>\n';						
+			txt = txt + '<Cell><Data ss:Type="String">' + diam + '</Data></Cell>\n';
+			txt = txt + '<Cell><Data ss:Type="String">' + lotnum + '</Data></Cell>\n';
+			txt = txt + '<Cell><Data ss:Type="Number">' + qty + '</Data></Cell>\n';
+			txt = txt + '<Cell ss:Index="13"><Data ss:Type="String">' + stk + '</Data></Cell>\n';
+			txt = txt + '<Cell><Data ss:Type="String">' + binn + '</Data></Cell>\n';
+			txt = txt + '</Row>\n';
 		}
 	}
 	
@@ -291,8 +257,7 @@ function CycleCountListXML(request, response){
 	txt = txt + '<Selected/>\n ';
 	txt = txt + '<Panes>\n ';
 	txt = txt + '<Pane>\n ';
-	txt = txt + '<Number>3</Number>\n ';
-	txt = txt + '<RangeSelection>C1</RangeSelection>\n ';
+	txt = txt + '<Number>1</Number>\n ';
 	txt = txt + '</Pane>\n ';
 	txt = txt + '</Panes>\n ';
 	txt = txt + '<ProtectObjects>False</ProtectObjects>\n ';
@@ -305,5 +270,12 @@ function CycleCountListXML(request, response){
 	response.setContentType('PLAINTEXT','cyclecount.xls');
 	response.write(txt);
 	
+}
+
+function CycleCountListXMLV2(request, response){
+	
+	
+	
 	
 }
+

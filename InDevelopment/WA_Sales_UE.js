@@ -18,7 +18,7 @@
  *                      editforecast (Opp, Estimate)
  * @returns {Void}
  */
-function UpdateFields(type){
+function UpdateFieldsEdit(type){
  
 	
 	var sorec = null;
@@ -33,7 +33,7 @@ function UpdateFields(type){
     var shiptotax = null;
     
 	try {
-	    if (type=='create' || type=='edit') {
+	    if (type=='edit') {
 			sorec = nlapiGetNewRecord();
 			if (sorec) { 
 			
@@ -59,7 +59,7 @@ function UpdateFields(type){
 			if (sorec) {
 				dterms = sorec.getFieldText('custbody_nbs_printeddeliveryterms');
 				pdterms = dterms;
-				if (dterms =='ESX' || dterms=='FCA') {
+				if (dterms =='EXW' || dterms=='FCA') {
 					location = nlapiLoadRecord('location',sorec.getFieldValue('location'));
 					if (location) {
 						locaddr = location.editSubrecord('mainaddress');
@@ -73,6 +73,78 @@ function UpdateFields(type){
 				}
 				pdterms = pdterms + " " + incoterm;
 				sorec.setFieldValue('custbody_wag_printed_deliverycity',pdterms);
+		    }
+			
+
+			
+			
+	    }
+	}
+	catch(e) {
+		if ( e instanceof nlobjError )
+		    nlapiLogExecution( 'DEBUG', 'system error', e.getCode() + '\n' + e.getDetails() )
+		else
+		      nlapiLogExecution( 'DEBUG', 'unexpected error', e.toString() )
+		
+	}
+}
+
+function UpdateFieldsCreate(type){
+ 
+	
+	var sorec = null;
+	var shipaddr = null;
+    var salester = null;
+	var dterms = null;
+	var pdterms = null;
+	var cpyconfig = null;
+	var location = null;
+	var locaddr = null;
+	var incoterm = null;
+    var shiptotax = null;
+    
+	try {
+	    if (type=='create') {
+			sorec = nlapiGetNewRecord();
+			if (sorec) { 
+			
+				
+				// update Sales Territory on SO
+				// Retreive shipto Tax ID
+				
+				shipaddr = sorec.editSubrecord('shippingaddress');
+				if (shipaddr) {
+	                salester = shipaddr.getFieldValue('custrecord_wag_sales_territory');
+					sorec.setFieldValue('custbody_wag_sales_territory_so',salester);
+					shiptotax = shipaddr.getFieldValue('custrecord_wag_localtaxid');
+					sorec.setFieldValue('custbody_wag_shiptotaxid',shiptotax);
+
+				}			
+			}
+
+			// Calculate Delivery Terms printing.
+			
+			cpyconfig = nlapiLoadConfiguration('companyinformation');
+			if (cpyconfig)
+				incoterm = cpyconfig.getFieldValue('custrecord_wag_incotermtext');
+			if (sorec) {
+				dterms = sorec.getFieldText('custbody_nbs_printeddeliveryterms');
+				pdterms = dterms;
+				if (dterms =='EXW' || dterms=='FCA') {
+					location = nlapiLoadRecord('location',sorec.getFieldValue('location'));
+					if (location) {
+						locaddr = location.editSubrecord('mainaddress');
+						if (locaddr)
+							pdterms = pdterms + " - "+ locaddr.getFieldValue('city');
+					}
+				}
+				else
+				{
+					pdterms = pdterms + " - "+ sorec.getFieldValue('shipcity');
+				}
+				pdterms = pdterms + " " + incoterm;
+				sorec.setFieldValue('custbody_wag_printed_deliverycity',pdterms);
+				nlapiSubmitRecord(sorec);
 		    }
 			
 

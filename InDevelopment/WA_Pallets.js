@@ -40,8 +40,8 @@ function populatePalletDetails(type){
 	var cusitmnm = null
 	var cusitmdes = null;
 	
-	if (type=='edit' || type=='create') 
-	{
+//	if (type=='edit' || type=='create') 
+//	{
 		try
 		{
 			pallet = nlapiGetNewRecord();
@@ -104,7 +104,7 @@ function populatePalletDetails(type){
 							output += cusitmdes + ';';
 							output += fulfill.getLineItemText('item','custcol_wag_packaging_code',itemln) + ';';
 							output += searchresults[cpt].getText(columns[2]) + ';';
-							output += fulfill.getLineItemValue('item','itemtype',itemln) + ';';
+							output += fulfill.getLineItemText('item','custcol_wag_if_material',itemln) + ';';
 							output += searchresults[cpt].getValue(columns[3]) + ';';
 							output += searchresults[cpt].getValue(columns[4]) + ';';
 							output += searchresults[cpt].getValue(columns[5]) + ';';
@@ -123,7 +123,7 @@ function populatePalletDetails(type){
 			      nlapiLogExecution( 'DEBUG', 'unexpected error', e.toString() )
 			
 		}
-	}
+//	}
  
 }
 
