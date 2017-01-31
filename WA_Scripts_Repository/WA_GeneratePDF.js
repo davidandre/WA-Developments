@@ -72,8 +72,8 @@ function genWADunningLetter1(request, response){
 		pdftext += '</macrolist>\n';
 		pdftext += genStyles();			
 		pdftext += '</head>\n';
-		pdftext += '<body header=\"nlheaderWA\" header-height=\"2in\" footer=\"nlfooterWA\" footer-height=\"2.5in\" padding=\"0.5in 0.5in 0.25in 0.5in\" size=\"A4\" ';
-		pdftext += ' background-image=\"' + nlapiEscapeXML(company.getFieldValue('custrecord_wag_wa_header_strip_url'));
+		pdftext += '<body header=\"nlheaderWA\" header-height=\"2in\" footer=\"nlfooterWA\" footer-height=\"1in\" padding=\"0.5in 0.5in 0.25in 0.5in\" size=\"A4\" ';
+		pdftext += ' background-image=\"' + nlapiEscapeXML(baseurl) + nlapiEscapeXML(company.getFieldValue('custrecord_wag_wa_header_strip_url'));
 		pdftext += '\" background-position=\"left top\" background-image-width=\"8.27in\" background-image-height=\"0.5in\" >\n';
 	
 		nlapiLogExecution( 'DEBUG', 'Generate Dunng Letter', 'Call GenBody');
@@ -234,14 +234,15 @@ function genWAHeader(request){
 		header += '<tr>\n';
 		header += '<td>\n';
 		if (native)
-			header += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_additionaladdress'));
+			header += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_additionaladdress')).replace(/(?:\r\n|\r|\n)/g,'<br />');
 		else
-			header += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_additionaladdress'));
+			header += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_additionaladdress')).replace(/(?:\r\n|\r|\n)/g,'<br />');
 		header += '</td>\n';
 		header += '</tr>\n';
 		header += '<tr>\n';
 		header += '<td>\n';
-		header += subsidiary.getFieldValue('mainaddress_text');
+		
+		header += nlapiEscapeXML(subsidiary.getFieldValue('mainaddress_text'));
 		header += '</td>\n';
 		header += '</tr>\n';
 		header += '<tr>\n';
@@ -253,7 +254,7 @@ function genWAHeader(request){
 		header += '</table>\n';
 		header += '</td>\n';		
 		header += '<td width=\"15%\" style=\"padding: 10px; padding-top: 0px;\" >\n';
-		header += '<img width=\"1in\" height=\"1.67in\" src=\"' + nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_printlogouri'))+ '\" />\n';
+		header += '<img width=\"1in\" height=\"1.67in\" src=\"' + nlapiEscapeXML(baseurl) + nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_printlogouri'))+ '\" />\n';
 		header += '</td>\n';
 		header += '</tr>\n';
 		header += '</table>\n';
@@ -287,12 +288,14 @@ function genWAFooter(request){
 		footer +=  '<tr>\n';
 		footer +=  '<td width=\"28%\">\n';
 		footer +=  '<p style=\"width: 100%; font-size: 6pt; text-align:left; vertical-align:middle;\">\n';
-	 	footer +=  '<img src=\"' + nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_certificationlogo')) +'\" style=\"display:inline;';
+	 	footer +=  '<img src=\"' + nlapiEscapeXML(baseurl) + nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_certificationlogo')) +'\" style=\"display:inline;';
 	 	footer +=  'height: ' + nlapiEscapeXML(subsidiary.getFieldValue('custrecordwag_certlogo_height')) + 'in; width: ';
 	 	footer +=  nlapiEscapeXML(subsidiary.getFieldValue('custrecord_wag_certlogo_width')) + 'in; vertical-align: middle;\" />\n';
 		footer +=  '<p style=\"display:inline; vertical-align: middle; margin-left:0.05in;\" >\n';
-	 	footer +=  nlapiEscapeXML(subsidiary.getFieldValue('custrecord_wag_certif_txt1')) + ' <br />\n';
-	 	footer +=  nlapiEscapeXML(subsidiary.getFieldValue('custrecord_wag_certif_txt2'));
+		if (subsidiary.getFieldValue('custrecord_wag_certif_txt1'))
+			footer +=  nlapiEscapeXML(subsidiary.getFieldValue('custrecord_wag_certif_txt1')) + ' <br />\n';
+	 	if (subsidiary.getFieldValue('custrecord_wag_certif_txt2'))
+		footer +=  nlapiEscapeXML(subsidiary.getFieldValue('custrecord_wag_certif_txt2'));
 	 	footer +=  '</p>\n';
 		footer +=  '</p>\n';
 		footer +=  '</td>\n';
@@ -300,19 +303,19 @@ function genWAFooter(request){
 		footer +=  '<p style=\"align:center; vertical-align:bottom;\" >\n';
 		if (native) {
 			if (subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo1'))
-				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo1')) + '<br />';
+				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo1')).replace(/(?:\r\n|\r|\n)/g,'<br />') + '<br />';
 			if (subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo2'))
-				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo2')) + '<br />';
+				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo2')).replace(/(?:\r\n|\r|\n)/g,'<br />') + '<br />';
 			if (subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo3'))
-				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo3'));
+				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_bankinfo3')).replace(/(?:\r\n|\r|\n)/g,'<br />');
 		}
 		else {
 			if (subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo1'))		
-				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo1')) + '<br />';
+				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo1')).replace(/(?:\r\n|\r|\n)/g,'<br />') + '<br />';
 			if (subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo2'))
-				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo2')) + '<br />';
+				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo2')).replace(/(?:\r\n|\r|\n)/g,'<br />') + '<br />';
 			if (subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo3'))		
-				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo3'));
+				footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_bankinfo3')).replace(/(?:\r\n|\r|\n)/g,'<br />');
 		}
 	
 		footer += '</p>\n';
@@ -321,12 +324,12 @@ function genWAFooter(request){
 		footer += '<p style=\"font-size:5pt; text-align:right; vertical-align: middle;\" width=\"100%\">\n';
 		footer += '<p style=\"display:inline; vertical-align: middle; text-align:left;\" >\n';
 		if (native)
-			footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_footertag'));
+			footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_ntv_footertag')).replace(/(?:\r\n|\r|\n)/g,'<br />');
 		else
-			footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_footertag'));
+			footer += nlapiEscapeXML(subsidiary.getFieldValue('custrecord_nbs_eng_footertag')).replace(/(?:\r\n|\r|\n)/g,'<br />');
 		
 		footer += '</p>';
-		footer += '<img display=\"inline\" src=\"'+ nlapiEscapeXML(subsidiary.getFieldValue('custrecord_wag_sparky_icon_url'));
+		footer += '<img display=\"inline\" src=\"' + nlapiEscapeXML(baseurl) + nlapiEscapeXML(subsidiary.getFieldValue('custrecord_wag_sparky_icon_url'));
 		footer += '\" width=\"0.462in\" height=\"0.5in\" margin-left=\"0.1in\" />\n';
 		footer += '</p>\n';
 		footer += '</td>\n';
@@ -348,8 +351,29 @@ function genWAFooter(request){
 function genBodyDunningLetter1(request) {
 	
 	var body = null;
+	var filters = null;
+	var columns = null;
+	var invoicesearch = null;
+	
+	
+	
 	try {
 		body = "<table><tr><td>TOTO</td></tr></table>\n";
+		filters[0] = new nlobjSearchFilter( 'type', null, 'anyOf', 'CustInvc');
+		filters[1] = new nlobjSearchFilter( 'entityid', 'customer', 'anyOf', custid);		
+		filters[2] = new nlobjSearchFilter( 'duedate', null, 'anyOf', duedate);		
+		
+		var columns = new Array();
+		columns[0] = new nlobjSearchColumn( 'trandate' );
+		columns[1] = new nlobjSearchColumn( 'tranid' );
+		columns[2] = new nlobjSearchColumn( 'entity' );
+		columns[3] = new nlobjSearchColumn( 'memo' );			
+		columns[4] = new nlobjSearchColumn( 'fxamountremaining' );
+		columns[5] = new nlobjSearchColumn( 'duedate' );
+
+		var invoicesearch = nlapiSearchRecord( 'transaction', null, filters, columns );
+		
+		
 	}
 	catch (e) {
 		if ( e instanceof nlobjError )

@@ -359,10 +359,11 @@ function checkItemLotFromFulfill(type, name, linenum) {
 					if (lots) 
 					{
 	//					nlapiLogExecution( 'DEBUG', 'Pallet Log', 'QTY : Lot number :' + lotid + ', Number of results:' + lots.length);
+						qty = 0;
 						for (var i = 0; lots != null && i < lots.length;i++)  
 						{
 							if (lots[i].getValue(columns[0]) == lotid) {
-								qty = parseFloat(lots[i].getValue(columns[1]));
+								qty += parseFloat(lots[i].getValue(columns[1]));
 								nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Qty in column =' + lots[i].getValue(columns[1]) );	
 								found = true;
 								unit = lots[i].getValue(columns[2]);
@@ -374,7 +375,7 @@ function checkItemLotFromFulfill(type, name, linenum) {
 
 					if (found)
 					{
-						// Look for weight already assigned to all pallets
+					// Look for weight already assigned to all pallets 
 						
 						var filtersp = new Array();
 						var columnsp = new Array();
@@ -399,14 +400,24 @@ function checkItemLotFromFulfill(type, name, linenum) {
 								}
 							}
 						}						
-
+						
+						// + Add Item Qty on current pallet 
+//						nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Number of line in current pallet : ' + nlapiGetLineItemCount('recmachcustrecord_wag_palletdetail_palid'));
+						for (var cpt=1;cpt<=nlapiGetLineItemCount('recmachcustrecord_wag_palletdetail_palid'); cpt++) {
+								if ((nlapiGetLineItemValue('recmachcustrecord_wag_palletdetail_palid','custrecord_wag_pallet_item',cpt)==itemid) && (nlapiGetLineItemValue('recmachcustrecord_wag_palletdetail_palid','custrecord_wag_palletdetail_lotnr',cpt)==lotid)) 
+									assqty += parseFloat(nlapiGetLineItemValue('recmachcustrecord_wag_palletdetail_palid','custrecord_wag_palletdetail_qty',cpt));							
+							
+						}
+//						nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Total Qty already on Pallet : '+assqty);
+	//					nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Total Qty on Fulfillment    : '+qty);						
+		//				nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Qty to add to pallet        : '+reqqty);						
 						// Calculate and check unit weight
 
 						unitweight = grossweight/qty;						
 						if (unit=='Kilogram') 
 							unitweight = 1;
 
-						nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Calculated weight:'+calcw);						
+						// nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Calculated weight:'+calcw);						
 						// Get current weight of pallet
 						var nbl = nlapiGetLineItemCount('recmachcustrecord_wag_palletdetail_palid');
 						for (var cpt=1; cpt<=nbl;cpt++){
@@ -414,7 +425,7 @@ function checkItemLotFromFulfill(type, name, linenum) {
 								currw = currw + parseFloat(nlapiGetLineItemValue('recmachcustrecord_wag_palletdetail_palid','custrecord_wag_palletdetail_netweight',cpt));
 							
 						}
-						nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Current Pallet Weight:'+currw);
+						// nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Current Pallet Weight:'+currw);
 						// Check if we can add this to the pallet
 						calcw = reqqty*unitweight;
 						
@@ -423,7 +434,7 @@ function checkItemLotFromFulfill(type, name, linenum) {
 							reqqty = (maxw-currw)*unitweight;
 						}
 						calcw = reqqty*unitweight;						
-						if (qty<=0)
+						if (qty<=assqty)
 						{
 							alert('There is no more quantity available for palleting for this Item');
 							nlapiSetCurrentLineItemValue(type,name,0,false);
@@ -435,7 +446,7 @@ function checkItemLotFromFulfill(type, name, linenum) {
 							calcw = (qty-assqty)*unitweight;
 							nlapiSetCurrentLineItemValue(type,'custrecord_wag_palletdetail_netweight',calcw,false);
 							return false;							
-						} else 
+						} else 					
 						{
 							nlapiSetCurrentLineItemValue(type,name,reqqty,false);							
 							nlapiSetCurrentLineItemValue(type,'custrecord_wag_palletdetail_netweight',calcw,false);
