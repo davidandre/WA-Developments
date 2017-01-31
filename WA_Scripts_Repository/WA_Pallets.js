@@ -112,6 +112,7 @@ function populatePalletDetails(type){
 					columns[4] = new nlobjSearchColumn( 'custrecord_wag_palletdetail_netweight','CUSTRECORD_WAG_PALLETDETAIL_PALID' );
 					columns[5] = new nlobjSearchColumn( 'custrecord_wag_palletweight' );
 					columns[6] = new nlobjSearchColumn( 'custrecord_wag_palletsize' );
+					columns[7] = new nlobjSearchColumn( 'custrecord_wag_pallettype' );					
 		
 					var searchresults = nlapiSearchRecord( 'customrecord_wag_pallet', null, filters, columns );
 					if (searchresults)
@@ -156,7 +157,8 @@ function populatePalletDetails(type){
 							output += searchresults[cpt].getValue(columns[3]) + ';';
 							output += searchresults[cpt].getValue(columns[4]) + ';';
 							output += searchresults[cpt].getValue(columns[5]) + ';';
-							output += searchresults[cpt].getValue(columns[6]) + '|';
+							output += searchresults[cpt].getValue(columns[6]) + ';';
+							output += searchresults[cpt].getText(columns[7]) + '|';							
 						}
 						fulfill.setFieldValue('custbody_wag_palletdetails',output);
 						nlapiSubmitRecord(fulfill);
