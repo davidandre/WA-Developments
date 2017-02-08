@@ -13,6 +13,8 @@
 	var company = null;
 	var baseurl = null;
 	var labels = null;
+	var today = null;
+	var todayd = null;	
 
 /**
  *  Init global variables from Netsuite context
@@ -25,6 +27,9 @@ function InitGlobals(subsidiaryid) {
 		subsidiary = nlapiLoadRecord('subsidiary', subsidiaryid);
 		company = nlapiLoadConfiguration('companyinformation');
 		baseurl = company.getFieldValue('custrecord_wag_baseurl');
+		
+		todayd = new Date();
+		today = nlapiDateToString(todayd,"date");
 	}
 	catch (e) {
 		if ( e instanceof nlobjError )
