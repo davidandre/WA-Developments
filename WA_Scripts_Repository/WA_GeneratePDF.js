@@ -24,8 +24,8 @@
 	var invoicelist = null;
 	var today = null;
 	var todayd = null;	
-	
-	
+	var invoiceslist = null;
+		
 	var currency_symbols = {
 		    'USD': '$', // US Dollar
 		    'EUR': '€', // Euro
@@ -74,8 +74,6 @@ function addButtonDunningLetter(type, form, request){
 		form.addButton('custpage_btn_dunningletter3', 'Dunning Letter 3 ', 'window.open(\'' + sUrl3 + '\', \'_blank\' )');		
 			
 }
-	
-	
 /**
  *  Generate Dunning Letter Level 1
  * @param {nlobjRequest} request Request object
@@ -99,12 +97,46 @@ function genWADunningLetter(request, response){
 	try {
 	
 		custid = request.getParameter("recordid");
+		level = request.getParameter("level");
+
+		genWADunningLetterMain(response,false);
+
+	}
+	catch (e) {
+		if ( e instanceof nlobjError )
+		    nlapiLogExecution( 'ERROR', 'system error', e.getCode() + '\n' + e.getDetails() )
+		else
+		      nlapiLogExecution( 'ERROR', 'unexpected error', e.toString() )
+	}
+	
+}
+	
+/**
+ *  Generate Dunning Letter Level 1
+ * @param {nlobjRequest} request Request object
+ * @param {nlobjResponse} response Response object
+ * @returns {Void} Any output is written via response object
+ */
+function genWADunningLetterMain(response,genfile){
+
+	var pdftxt = null;
+	var pdffile = null;
+	var filterstpl = null;
+	var columnstpl = null;
+	var dunningsearch = null;
+	var history = null;
+	var historyid = null;	
+	var filters = null;
+	var columns = null;
+	var historicdl = null;
+	var found = null;
+	
+	try {
+	
 		subsidiaryid = nlapiLookupField('customer',custid,'subsidiary');
-		
 		subsidiary = nlapiLoadRecord('subsidiary', subsidiaryid);
 		company = nlapiLoadConfiguration('companyinformation');
 		baseurl = company.getFieldValue('custrecord_wag_baseurl');
-		level = request.getParameter("level");
 
 		lng = nlapiLookupField('customer',custid,'language');
 	
@@ -183,15 +215,25 @@ function genWADunningLetter(request, response){
 			nlapiLogExecution( 'DEBUG', 'Generate Dunng Letter', 'File size: '+ pdffile.getSize());
 			nlapiLogExecution( 'DEBUG', 'Generate Dunng Letter', 'File type : '+ pdffile.getType());
 			
+			// If print at screen
+			if (!genfile) {
+				// set content type, file name, and content-disposition (inline means display in browser)
+				nlapiLogExecution( 'DEBUG', 'Generate Dunng Letter', 'Set Content Type');		
+				response.setContentType('PDF','dunning_letter_' + nlapiLookupField('customer',custid,'entityid') + '_' + level + '.pdf');
 			
-			// set content type, file name, and content-disposition (inline means display in browser)
-			nlapiLogExecution( 'DEBUG', 'Generate Dunng Letter', 'Set Content Type');		
-			response.setContentType('PDF','dunning_letter_' + nlapiLookupField('customer',custid,'entityid') + '_' + level + '.pdf');
-		
-			// write response to the client
-			nlapiLogExecution( 'DEBUG', 'Generate Dunng Letter', 'Write Response');		
-			response.write( pdffile.getValue() );
-			
+				// write response to the client
+				nlapiLogExecution( 'DEBUG', 'Generate Dunng Letter', 'Write Response');		
+				response.write( pdffile.getValue() );
+			} else
+				// If generate file in file cabinet
+			{
+				if (subsidiary.getFieldValue('custrecord_wag_dunningletter_storage')) {
+					pdffile.setFolder(subsidiary.getFieldValue('custrecord_wag_dunningletter_storage'));
+					pdffile.setName('dunning_letter_' + nlapiLookupField('customer',custid,'entityid') + '_' + level + '.pdf');
+					nlapiSubmitFile(pdffile);
+				}
+			}
+				
 			// Generate History of Dunning letters
 			//Load current history for customer and Level to avoid duplicate
 			filters = new Array();
@@ -564,9 +606,9 @@ function dunningTextConvert(text) {
 		
 		// Replace variables
 		nlapiLogExecution( 'DEBUG', 'PDF Tools - DunningConvert', 'Replace variables in text' )
-		text = text.replace(/{today}/i,today);
+		text = text.replace(/{today}/gi,today);
 		if (paymentperiod) 
-			text = text.replace(/{paymentperiod}/i,paymentperiod);
+			text = text.replace(/{paymentperiod}/gi,paymentperiod);
 		
 		// Previous Dunning Letter (level n-1) date
 		
@@ -585,9 +627,9 @@ function dunningTextConvert(text) {
 				previousDLdate = previousDL[0].getValue(columns[0]);
 			
 			if (previousDLdate)
-				text = text.replace(/{previousletterdate}/i,previousDLdate);	
+				text = text.replace(/{previousletterdate}/gi,previousDLdate);	
 			else
-				text = text.replace(/{previousletterdate}/i,"________________");
+				text = text.replace(/{previousletterdate}/gi,"________________");
 		}
 		
 		//Get Last payment date
@@ -608,19 +650,19 @@ function dunningTextConvert(text) {
 			paymentdate = payments[0].getValue(columns[1]);
 	
 		if (paymentdate) 
-			text = text.replace(/{lastpaymentdate}/i,paymentdate);
+			text = text.replace(/{lastpaymentdate}/gi,paymentdate);
 	
 		//Convert to XML
 		nlapiLogExecution( 'DEBUG', 'PDF Tools - ConvertText', 'Convert to XML' );
 		text = convertTextToXML(text);
 	
 		//BOLD
-		text = text.replace(/{bold}/i,"<b>");
-		text = text.replace(/{\/bold}/i,"</b>");		
+		text = text.replace((/{bold}/gi),"<b>");
+		text = text.replace((/{\/bold}/gi),"</b>");		
 		
 		//Italic
-		text = text.replace(/{italic}/i,"<i>");
-		text = text.replace(/{\/italic}/i,"</i>");
+		text = text.replace((/{italic}/gi),"<i>");
+		text = text.replace((/{\/italic}/gi),"</i>");
 		
 	}
 	catch (e) {
@@ -651,7 +693,11 @@ function genBodyDunningLetter(request) {
 	var invoicesearch = null;
 	var contact = null;
     var address = null;
-		
+    var cptfilter = null;
+	var header = null;
+	var displayinvoice = null;
+	var cpto = null;
+	
 	try {
 		
 		// Init Body to empty
@@ -665,8 +711,12 @@ function genBodyDunningLetter(request) {
 			filters[1] = new nlobjSearchFilter( 'entity', null, 'anyOf', custid);
 			filters[2] = new nlobjSearchFilter( 'fxamountremaining', null, 'greaterthan', 0);
 			filters[3] = new nlobjSearchFilter( 'duedate', null, 'before', dunningtpl.getFieldText('custrecord_wag_dunning_from'));
-			if (dunningtpl.getFieldText('custrecord_wag_dunning_to'))
-				filters[4] = new nlobjSearchFilter( 'duedate', null, 'onorafter', dunningtpl.getFieldText('custrecord_wag_dunning_to'));		
+			cptfilter = 4;
+			if (dunningtpl.getFieldText('custrecord_wag_dunning_to')) {
+				filters[cptfilter] = new nlobjSearchFilter( 'duedate', null, 'onorafter', dunningtpl.getFieldText('custrecord_wag_dunning_to'));
+				cptfilter ++;
+			}
+
 			
 			nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Set Invoice Columns');
 			columns = new Array();
@@ -684,7 +734,8 @@ function genBodyDunningLetter(request) {
 			nlapiLogExecution('DEBUG', 'Generate Dunning Letter', '   <--- done');
 			
 			// Load Finance Contact
-			contact = nlapiLoadRecord('employee',dunningtpl.getFieldValue('custrecord_wag_dunning_fincontact'));
+			if (dunningtpl.getFieldValue('custrecord_wag_dunning_fincontact'))
+				contact = nlapiLoadRecord('employee',dunningtpl.getFieldValue('custrecord_wag_dunning_fincontact'));
 			address = nlapiLoadRecord('customer',custid).getFieldValue('defaultaddress');
 			
 			if (invoicesearch != null) {
@@ -700,11 +751,13 @@ function genBodyDunningLetter(request) {
 				body += '</p>\n';
 				body += '</td>\n';
 				body += '<td width=\"50%\">\n';
-				body += '<p>' + labels['custrecord_wag_label_name'] + ': ' + convertTextToXML(contact.getFieldValue('custentity_nbs_employee_printedname'))+ '</p>\n';
-				body += '<p>' + labels['custrecord_wag_label_telno'] + ': ' + convertTextToXML(contact.getFieldValue('phone'))+ '</p>\n';
-				body += '<p>' + labels['custrecord_wag_label_mobile'] + ': ' + convertTextToXML(contact.getFieldValue('mobilephone'))+ '</p>\n';
-				body += '<p>' + labels['custrecord_wag_faxnumber'] + ': ' + convertTextToXML(contact.getFieldValue('fax'))+ '</p>\n';
-				body += '<p>' + labels['custrecord_wag_emaillabel'] + ': ' + convertTextToXML(contact.getFieldValue('email'))+ '</p>\n';
+				if (contact) {
+					body += '<p>' + labels['custrecord_wag_label_name'] + ': ' + convertTextToXML(contact.getFieldValue('custentity_nbs_employee_printedname'))+ '</p>\n';
+					body += '<p>' + labels['custrecord_wag_label_telno'] + ': ' + convertTextToXML(contact.getFieldValue('phone'))+ '</p>\n';
+					body += '<p>' + labels['custrecord_wag_label_mobile'] + ': ' + convertTextToXML(contact.getFieldValue('mobilephone'))+ '</p>\n';
+					body += '<p>' + labels['custrecord_wag_faxnumber'] + ': ' + convertTextToXML(contact.getFieldValue('fax'))+ '</p>\n';
+					body += '<p>' + labels['custrecord_wag_emaillabel'] + ': ' + convertTextToXML(contact.getFieldValue('email'))+ '</p>\n';
+				}
 				body += '</td>\n';
 				body += '</tr>\n';
 				body += '<tr>\n';
@@ -730,31 +783,51 @@ function genBodyDunningLetter(request) {
 				body += "</table>\n";		
 				body += '<table style=\"border: 1px solid; width: 90%;\" >\n';
 				nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Loop on ' + invoicesearch.length + 'invoices');
+				header = true;
+				cpto = 0;
 				for (var cpt=0;invoicesearch != null && cpt < invoicesearch.length;cpt++) 
 				{
-					if (cpt==0) {
-						body += '<thead>\n';
-						body += '<tr style=\"border-top: 1px solid; width: 100%;\">\n';
-						body += '<td >' + labels['custrecord_wag_invoice_no'] + '</td>\n';
-						body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_label_date'] + '</td>\n';
-						body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_label_duedate'] + '</td>\n';
-						body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_amount'] + '</td>\n';
-						body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_label_description'] + '</td>\n';
-						body += '</tr>';
-						body += '</thead>\n';
-						
+					// If selection of invoice only add the filter
+					displayinvoice = false;
+					nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Check if user selected some invoices only');
+					if (!invoiceslist) {
+						displayinvoice = true;
+					}else if (invoiceslist && invoiceslist.length>0) {
+						nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Check invoice ' + invoicesearch[cpt].getValue(columns[6]));		
+						for (var cpti = 0; cpti <invoiceslist.length && !displayinvoice; cpti++) {
+							nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Compare to invoice ' + invoiceslist[cpti]);
+							if (invoiceslist[cpti] == invoicesearch[cpt].getValue(columns[6])) {
+								nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Display ' + invoiceslist[cpti]);
+								displayinvoice = true;
+							}
+						}
 					}
-					// Add invoice to history list
-					invoicelist[cpt] = invoicesearch[cpt].getValue(columns[6]);
-					
-					body += '<tr style=\"border-top: 1px solid; width: 100%;\">\n';
-					body += '<td ><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[0])) + '</p></td>\n';
-					body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[1])) + '</p></td>\n';
-					body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[2])) + '</p></td>\n';
-					body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:right\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[3])) + nlapiEscapeXML(currency_symbols[invoicesearch[cpt].getText(columns[5])]) + '</p></td>\n';
-					body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[4])) + '</p></td>\n';
-					body += '</tr>';
-					nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'invoice currency name : ' + invoicesearch[cpt].getText(columns[5]));
+					if (displayinvoice) {
+						if (header) {
+							header = false;
+							body += '<thead>\n';
+							body += '<tr style=\"border-top: 1px solid; width: 100%;\">\n';
+							body += '<td >' + labels['custrecord_wag_invoice_no'] + '</td>\n';
+							body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_label_date'] + '</td>\n';
+							body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_label_duedate'] + '</td>\n';
+							body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_amount'] + '</td>\n';
+							body += '<td style=\"border-left: 1px solid; \">' + labels['custrecord_wag_label_description'] + '</td>\n';
+							body += '</tr>';
+							body += '</thead>\n';
+						}
+						// Add invoice to history list
+						invoicelist[cpto] = invoicesearch[cpt].getValue(columns[6]);
+						cpto++;
+						
+						body += '<tr style=\"border-top: 1px solid; width: 100%;\">\n';
+						body += '<td ><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[0])) + '</p></td>\n';
+						body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[1])) + '</p></td>\n';
+						body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[2])) + '</p></td>\n';
+						body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:right\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[3])) + nlapiEscapeXML(currency_symbols[invoicesearch[cpt].getText(columns[5])]) + '</p></td>\n';
+						body += '<td style=\"border-left: 1px solid; \"><p style=\"text-align:left\" >'+ nlapiEscapeXML(invoicesearch[cpt].getValue(columns[4])) + '</p></td>\n';
+						body += '</tr>';
+						nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'invoice currency name : ' + invoicesearch[cpt].getText(columns[5]));
+					}
 					
 				}
 				
@@ -780,7 +853,7 @@ function genBodyDunningLetter(request) {
 				body += '</table>\n\n';
 				
 			} else
-				body="<p>No data to create the dunning letter</p>";
+				body="<p>No Invoice to add to this dunning letter</p>";
 		} else
 			body="<p>Dunning letter template error</p>";
 	}
@@ -794,6 +867,234 @@ function genBodyDunningLetter(request) {
 	return body;
 }
 
+/*
+ *  Gen list of all customers/invoice to send dunning letter to
+ *  
+ */
+function prepareListofDunningLetters(request, response){
+
+		var userid = null;
+		var today = null;
+		var subsidiary = null;
+		var filters = null;
+		var columns = null;
+		var dunningsearch = null;
+		var invoicesearch = null;		
+		var lng = null;
+		var dunningform  = null;
+		var dl_list = null;
+		var curlevel = null;
+		var historicdl = null;
+		var found = null;
+		var cpto = null;
+		var params = null; 
+		var param = null;
+		var paramvalue = null;
+		var lettertable = null;
+		var sUrl = null;
+		var subval =null;
+		var curcust = null;
+		
+		
+		try {
+		//	var params = request.getAllParameters();
+		//	for ( param in params )
+		//	{
+		//	    nlapiLogExecution('DEBUG', 'parameter: '+ param)
+		//	    nlapiLogExecution('DEBUG', 'value: '+params[param])
+		//	} 
+			
+	
+			nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Init Variables');
+			
+			// Init variables
+			
+			userid = nlapiGetUser();
+			subsidiaryid = nlapiGetSubsidiary();
+			filters = new Array();
+			columns = new Array();
+			dl_list = new  Array();
+			lettertable = new Array();
+			
+			today = nlapiDateToString(new Date(),'datetime');
+			lng = nlapiLookupField('employee',userid,'language');
+			if (!lng)
+				lng = "en_GB";
+			nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', '   - End Init Variables');
+			if (userid && subsidiaryid) {
+
+				// Search DL templates from level 1 to n (user's language version)
+				
+				filters[0] = new nlobjSearchFilter( 'custrecord_wag_dunning_subsidiary', null, 'anyOf', subsidiaryid);
+				filters[1] = new nlobjSearchFilter( 'custrecord_wag_dunning_language', null, 'anyOf', lng);		
+		
+				columns[0] = new nlobjSearchColumn( 'internalid' );
+				columns[1] = new nlobjSearchColumn( 'custrecord_wag_dunning_level' );
+				columns[2] = new nlobjSearchColumn( 'custrecord_wag_dunning_from' );
+				columns[3] = new nlobjSearchColumn( 'custrecord_wag_dunning_to' );
+				columns[4] = columns[1].setSort();
+				
+				nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Look for all dunning letter template in native language or EN by default');
+				dunningsearch  = nlapiSearchRecord( 'customrecord_wag_dunning_texts', null, filters, columns);
+				 
+				
+				if (dunningsearch) {
+
+					// Submitted Form --> After Submit generate the PDF files into the Files cabinet
+					
+					if (request.getParameter('_button') != null) {
+						nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Submitted Form');
+						params = request.getAllParameters();
+						cpto=-1;
+						for (var cpt=0; dunningsearch && dunningsearch.length>cpt; cpt++) {
+							curlevel = dunningsearch[cpt].getValue(columns[1]);
+							for ( param in params ){
+								if (param == 'custpage_list_level'+cpt+'data') {
+									paramvalue = params[param];
+									paramvalue = paramvalue.split('');
+									nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Data splitted Length:'+paramvalue.length );
+									for (var cptv=0; cptv < paramvalue.length; cptv++) {
+										subval = paramvalue[cptv].split('');
+										if (subval[0] == 'T') {
+											if (subval[1] != curcust) {
+													curcust = subval[1];
+													cpto++;
+													lettertable[cpto]= new Array();
+													lettertable[cpto][2] ='';
+													lettertable[cpto][0] = curlevel;
+													lettertable[cpto][1] = subval[1];
+											}	
+											lettertable[cpto][2] += subval[2] + ';';
+											nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Selected Lines '+cpto+' : Level:'+lettertable[cpto][0]);
+											nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Selected Lines '+cpto+' : Customer:'+lettertable[cpto][1]);
+											nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Selected Lines '+cpto+' : Invoice:'+lettertable[cpto][2]);
+										}
+									}
+								}
+							}
+						}
+						// Launch script to generate Letters in the cabinet.
+						nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Selected Lines : output Number of lines selected :'+cpto);
+						for (var cpt=0;cpt<=cpto;cpt++) {
+							custid = lettertable[cpt][1];
+							level  = lettertable[cpt][0];
+							invoiceslist = lettertable[cpt][2].split(';');
+							genWADunningLetterMain(response,true)
+						}
+					}
+					
+					// Display List of due invoices
+					nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Generate Form with due invoices list');
+					//Load current history for customer and Level to avoid invoice already treated.
+					
+					filters.length = 0;
+					filters[0] = new nlobjSearchFilter( 'custrecord_wag_dunning_hist_subsidiary', null, 'anyOf', subsidiaryid);
+					columns.length = 0;
+					columns[0] = new nlobjSearchColumn( 'custrecord_wag_dunning_hist_inv');
+					columns[1] = columns[0].setSort(); 
+					columns[2] = new nlobjSearchColumn( 'custrecord_wag_dunning_hist_lvl');
+					columns[3] = new nlobjSearchColumn( 'custrecord_wag_dunning_hist_inv');
+					
+					nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Run the History search');
+					historicdl  = nlapiSearchRecord( 'customrecord_wag_dunning_history', null, filters, columns );
+					
+					// Init Form
+					nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Init Form');	
+					dunningform = nlapiCreateForm('List of Invoices Due - Dunning Letters Generator');
+					
+					// Add Submit button
+					dunningform.addSubmitButton('Generate letters');
+					
+					for (var cpt=0; dunningsearch && dunningsearch.length>cpt; cpt++) {
+						curlevel = dunningsearch[cpt].getValue(columns[1]);
+						
+						// Search all invoices with unpaied amount, sorted by customer
+						nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Create invoice search n°'+cpt);
+						filters.length=0;
+						filters[0] = new nlobjSearchFilter( 'type', null, 'anyOf', 'CustInvc');
+						filters[1] = new nlobjSearchFilter( 'subsidiary', null, 'anyOf', subsidiaryid);
+						filters[2] = new nlobjSearchFilter( 'fxamountremaining', null, 'greaterthan', 0);
+						filters[3] = new nlobjSearchFilter( 'duedate', null, 'before', dunningsearch[cpt].getText('custrecord_wag_dunning_from'));
+						if (dunningsearch[cpt].getText('custrecord_wag_dunning_to'))
+							filters[4] = new nlobjSearchFilter( 'duedate', null, 'onorafter', dunningsearch[cpt].getText('custrecord_wag_dunning_to'));		
+						
+						columns.length=0;
+						columns[0] = new nlobjSearchColumn( 'tranid' );
+						columns[1] = new nlobjSearchColumn( 'trandate' );
+						columns[2] = new nlobjSearchColumn( 'duedate' );
+						columns[3] = new nlobjSearchColumn( 'fxamountremaining' );
+						columns[4] = new nlobjSearchColumn( 'memo' );
+						columns[5] = new nlobjSearchColumn( 'currency' );			
+						columns[6] = new nlobjSearchColumn( 'internalid' );
+						columns[7] = new nlobjSearchColumn( 'entity' );
+						columns[8] = columns[7].setSort();
+						columns[9] = columns[0].setSort();
+						columns[10] = columns[2].setSort();						
+						
+						invoicesearch  = nlapiSearchRecord( 'invoice', null, filters, columns );
+
+						if (invoicesearch && invoicesearch.length>0) {
+							//Create Group per level of dunning letter
+							dunningform.addSubTab('custpage_tab_level' + cpt ,'Level '+ curlevel);
+							// Create sublist per level
+							dl_list[cpt] = dunningform.addSubList('custpage_list_level'+cpt, 'list', 'Dunning Letter Lvl '+curlevel);
+							dl_list[cpt].addMarkAllButtons();
+							//Create list of fields
+
+							dl_list[cpt].addField('custfield_selected_' + cpt,'checkbox',' ');
+							dl_list[cpt].addField('custfield_cust_' + cpt,'select','Customer','customer');
+							dl_list[cpt].getField('custfield_cust_' + cpt).setDisplayType('inline');							
+							dl_list[cpt].addField('custfield_inv_' + cpt,'select','Invoice #','invoice');
+							dl_list[cpt].getField('custfield_inv_' + cpt).setDisplayType('inline');							
+							dl_list[cpt].addField('custfield_invdate_' + cpt,'date','Invoice date');
+							dl_list[cpt].addField('custfield_duedate_' + cpt,'date','Due date');
+							dl_list[cpt].addField('custfield_amount_' + cpt,'float','Amount due');
+							dl_list[cpt].addField('custfield_currency_' + cpt,'select','Currency','currency');
+							dl_list[cpt].getField('custfield_currency_' + cpt).setDisplayType('inline');							
+							dl_list[cpt].addField('custfield_memo_' + cpt,'text','Memo');
+							
+							// Add to the list
+							cpto = 0;
+							for (var cpti=0; invoicesearch && invoicesearch.length>cpti; cpti++) {
+								found = false;
+								if (historicdl)					
+									for (var cpt2=0; (cpt2<historicdl.length) && (!found);cpt2++)
+										if (historicdl[cpt2].getValue('custrecord_wag_dunning_hist_inv') ==  invoicesearch[cpti].getValue(columns[6]))
+											if (historicdl[cpt2].getValue('custrecord_wag_dunning_hist_lvl') ==  curlevel)
+												found = true;
+								if (!found) {
+									cpto = cpto +1;
+									dl_list[cpt].setLineItemValue('custfield_cust_' + cpt,cpto,invoicesearch[cpti].getValue(columns[7]));
+									dl_list[cpt].setLineItemValue('custfield_inv_' + cpt,cpto,invoicesearch[cpti].getValue(columns[6]));
+									dl_list[cpt].setLineItemValue('custfield_invdate_' + cpt,cpto,invoicesearch[cpti].getValue(columns[1]));
+									dl_list[cpt].setLineItemValue('custfield_duedate_' + cpt,cpto,invoicesearch[cpti].getValue(columns[2]));
+									dl_list[cpt].setLineItemValue('custfield_amount_' + cpt,cpto,invoicesearch[cpti].getValue(columns[3]));
+									dl_list[cpt].setLineItemValue('custfield_currency_' + cpt,cpto,invoicesearch[cpti].getValue(columns[5]));
+									dl_list[cpt].setLineItemValue('custfield_memo_' + cpt,cpto,invoicesearch[cpti].getValue(columns[4]));
+								}
+							}
+						}
+					}
+					
+				}
+
+			}
+			
+			
+			// Write the form
+			if (dunningform)
+				response.writePage(dunningform);
+			
+			
+		}
+		catch (e) {
+			if ( e instanceof nlobjError )
+			    nlapiLogExecution( 'ERROR', 'system error', e.getCode() + '\n' + e.getDetails() )
+			else
+			      nlapiLogExecution( 'ERROR', 'unexpected error', e.toString() )
+		}
+ 
+}
 
 
 
