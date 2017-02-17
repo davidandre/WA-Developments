@@ -15,11 +15,16 @@
 	var labels = null;
 	var today = null;
 	var todayd = null;	
+	var lang = null;
+	
 
 /**
  *  Init global variables from Netsuite context
  */
 function InitGlobals(subsidiaryid) {
+	
+	var columns = null;
+	var searchlng = null;
 	
 	try {
 		nlapiLogExecution('DEBUG', 'WA PDF Toolbox', 'Init Global Variables');
@@ -30,6 +35,19 @@ function InitGlobals(subsidiaryid) {
 		
 		todayd = new Date();
 		today = nlapiDateToString(todayd,"date");
+		
+		// Load Languages
+		columns = new Array();
+		columns[0] = new nlobjSearchColumn('internalid');
+		columns[1] = new nlobjSearchColumn('custrecord_wag_lng_textcode');
+		
+		searchlng = nlapiSearchRecord('customrecord_wag_languages',null,null,columns);
+		lang = new Object();
+		
+		if (searchlng && searchlng.length>0)
+			for (var cpt=0; cpt<searchlng.length; cpt++)
+				lang[searchlng[cpt].getValue(columns[1])] = searchlng[cpt].getValue(columns[0]);
+			
 	}
 	catch (e) {
 		if ( e instanceof nlobjError )

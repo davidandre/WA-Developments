@@ -1,0 +1,546 @@
+<?xml version="1.0"?><!DOCTYPE pdf PUBLIC "-//big.faceless.org//report" "report-1.1.dtd">
+<pdf>
+    <!-- Check cust. item no & desc. print mode -->
+      	<!-- 1-Print Internal Item Information
+      			2-Print Customer Item Information
+      			3-Print Both Internal & Customer Item Information
+      	 -->
+  	<#switch record.custbody_wag_custitemdesc_optmode?trim>
+      <#case "Print Internal Item Information">
+            <#global itemnodesc_printmode = "1" />
+         <#break>
+      <#case "Print Customer Item Information">
+            <#global itemnodesc_printmode = "2" />
+         <#break>
+      <#case "Print Both Internal and Customer Item Information">
+            <#global itemnodesc_printmode = "3" />
+         <#break>
+      <#default>
+            <#global itemnodesc_printmode = "2" />
+  	</#switch>
+	<!-- Check Do Not Print Item number checked box -->
+	<#if record.custbody_wag_dontprintitemnumber?string?capitalize == subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_yes@label?capitalize>
+             <!-- do not print item number -->
+      	<#global notprint_itemno = "T" />
+    <#else>
+        <!-- Print item number -->
+      	<#global notprint_itemno = "F" />
+    </#if>
+    <!-- FOOTER HEIGHT  ,change to 2 if got discount on order level -->
+      	<#global footerheight = "1.75" />
+	<#if record.discountitem?has_content>
+       	<#global footerheight = "2" />
+	   <#else>
+      	<#global footerheight = "1.75" />
+    </#if>
+	<head>
+		<#global vatlabel = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_vatlabel@label />
+        <#global totalgrossweight = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_totalgrossweight@label />
+      	<#global totalnetweight = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_totalnetweight@label />
+      	<#global decOrImp = record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_kg@label />
+
+		<#if .locale == "ru_RU">
+			<link name="verdana" type="font" subtype="opentype" src="${nsfont.verdana}" src-bold="${nsfont.verdana_bold}" bytes="2" />
+		</#if>
+		<macrolist>
+		   <macro id="nlheaderAX">
+			 <table style="width: 100%; font-size: 8pt;">
+                  <tr>
+                      <td width="58%">&nbsp;</td>
+                      <td colspan="7" rowspan="1" style="padding: 5px; width: 42%; height: 15px;">
+                              <#if subsidiary.custrecord_nbs_printlogouri?has_content>
+                                  <img height="0.8in" src="${companyinformation.custrecord_wag_baseurl}${subsidiary.custrecord_nbs_printlogouri}" width="2.5in" /> 
+                              </#if>
+                      </td>
+                  </tr>
+                  <tr>
+                  <!--  Bill to address  -->
+                      <td rowspan="8" style="white-space: nowrap;" width="58%">
+                          <table style="width: 100%; font-size: 10pt;">
+                              <tr>
+                                      <td  style=" font-size: 10pt; padding: 2px 2px 2px 0px ; font-weight: bold; color: #333333; width: 70%; ">
+                              <br/>
+                              <br/>
+                              <br/>
+                                      ${record.billaddress@label} : ${record.entity.entityid}</td>
+                                  </tr>
+                                  <tr>
+                                          <td  style="padding: 2px 2px 2px 0px ; font-size: 10pt; width: 70%; ">${record.billaddress}</td>
+                                  </tr>
+                          </table>
+         			</td>
+                    <td rowspan="8" style="white-space: nowrap;" width="42%">
+                        <!-- nested table for company name & address -->
+                    	<table style="width: 100%; font-size: 8pt;">
+                        	<tr>
+                            	<td style="font-family: 'Arial Narrow', Arial, sans-serif; font-size: 10pt; color: #5FAA67;"></td>
+                            </tr>
+                            <#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                            	<!-- Native -->
+                              	<#if record.subsidiary.custrecord_nbs_ntv_additionaladdress?has_content>
+                            		<tr>
+                                		<td>${record.subsidiary.custrecord_nbs_ntv_additionaladdress}</td>
+                              		</tr>
+                          		<#else>
+                            		<tr>
+                                		<td>${subsidiary.mainaddress_text}</td>
+									</tr>
+									<tr>
+	                                	<td>Tel: ${record.subsidiary.phone} Fax: ${record.subsidiary.fax}</td>
+									</tr>
+								</#if>
+                            <#else><!-- English -->
+            					<#if record.subsidiary.custrecord_nbs_eng_additionaladdress?has_content>
+                                	<tr>
+                                    	<td>${record.subsidiary.custrecord_nbs_eng_additionaladdress}</td>
+                                  	</tr>
+                             	<#else>
+                                	<tr>
+                                    	<td>${subsidiary.mainaddress_text}</td>
+									</tr>
+									<tr>
+										<td>Tel: ${subsidiary.phone} ${subsidiary.fax@label}: ${subsidiary.fax}</td>
+									</tr>
+								</#if>
+							</#if>
+						</table>
+                    </td>
+                 </tr>
+              </table>
+            </macro>
+			<macro id="nlfooterAX">
+                     <table style="width: 100%;">
+                     <!-- INTERNAL SALES REP.  & SUBTOTAL-->
+                        <tr>
+                          <td width="35%" style="font-size: 6pt;"><strong>${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_intsalesrep@label}:</strong>
+                            <#if record.custbody_nbs_intsalrep.custentity_nbs_employee_printedname?has_content>
+                               ${record.custbody_nbs_intsalrep.custentity_nbs_employee_printedname}
+                              <#else>
+                                 ${record.custbody_nbs_intsalrep.entityid}
+                              </#if>
+                          </td>
+                          <td width="30%" style="font-size: 6pt;" align="center" margin="3px">
+                              <p style="text-align:left;">
+                                            <#if subsidiary.custrecord_wag_country_code?trim?capitalize != record.shipcountry?trim?capitalize>
+                                              <#if "BE;EL;LT;PT;BG;ES;LU;RO;CZ;FR;HU;SI;DK;HR;MT;SK;DE;IT;NL;FI;EE;CY;AT;SE;IE;LV;PL;UK;GB"?index_of(record.shipcountry)!=-1>
+                                                <#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                                                  <!-- Native -->
+                                                  ${record.subsidiary.custrecord_wag_label_ntv_europeanshippin}
+                                                <#else>
+                                                    <!-- English -->
+                                                    ${record.subsidiary.custrecord_wag_eng_europeanshippin}
+                                                </#if>
+                                              </#if>
+                                            </#if>
+                              </p>
+                          </td>
+                          <td align="left" style="font-weight: bold; color: #333333;">
+                                  <p style="text-align:left;">
+                                      ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_subtotal@label}
+                                  </p>
+                          </td>
+                          <td align="left" width="10%" style="font-weight: bold; color: #333333;">${record.currency}</td>
+                          <td align="right">${record.subtotal} </td>
+                      </tr>
+                      <!-- ORDER LEVEL DISCOUNT  -->
+                          <#if record.discountitem?has_content>
+                              <tr>
+                                  <td colspan="2"></td>
+                                <td align="left" style="font-weight: bold; color: #333333;">
+                                  <p style="text-align:left;">
+                                                  ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_discount@label}
+                                  </p>
+                                </td>
+                                <td align="left" style="font-weight: bold; color: #333333;">
+                                        ${record.discountrate}
+                                </td>
+                                <td align="right">${record.discounttotal}</td>
+                          </tr>
+                       </#if>
+                      <!-- TAX TOTAL -->
+                      <tr>
+                                  <td colspan="2"></td>
+                                <td align="left" style="font-weight: bold; color: #333333;">
+                                  <p style="text-align:left;">
+                                      ${vatlabel}
+                                  </p>
+                                </td>
+                                <td align="left" style="font-weight: bold; color: #333333;">
+                                  <#list record.item as item>
+                                     <#if item.taxcode?has_content>
+                                        ${item.taxrate1}
+                                          <#if item.taxrate1?has_content>
+                                            <#break>
+                                         </#if>
+                                     </#if>
+                                  </#list>
+                                </td>
+                                <td align="right">${record.taxtotal}</td>
+                          </tr>
+                          <!-- TOTAL -->
+                          <tr>
+                                  <td ></td>
+                            <td style="font-size: 6pt;" align="center">
+                                          <#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                                            <!-- Native -->
+                                            ${record.subsidiary.custrecord_nbs_ntv_printsignature}
+                                          <#else>
+                                              <!-- English -->
+                                              ${record.subsidiary.custrecord_nbs_eng_printsignature}
+                                          </#if>
+                            </td>
+                                <td align="left" style="font-weight: bold; color: #333333;">
+                                  <p style="text-align:left;">
+                                      ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_totallabel@label}
+                                  </p>
+                                </td>
+                                <td align="left" style="font-weight: bold; color: #333333;">${record.currency}</td>
+                                <td align="right" style="font-weight: bold; color: #333333;">${record.total}</td>
+                              </tr>
+                       </table>
+			<br />
+            <table align="left" cellpadding="0" cellspacing="0" style="width:100%; border-top: 1px solid #000000;">
+				<tr>
+                  <td>&nbsp;</td>
+                </tr>
+                  <!-- VAT ID etc.. -->
+                <tr>
+                	<td class="tdc" style="font-size:6pt; text-align:left;" width="100%">
+                    	<p style="font-size:6pt;text-align:left; vertical-align: bottom;">
+                        	<#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                            	<!-- Native -->
+                              	${record.subsidiary.custrecord_nbs_ntv_footertag}
+                           	<#else>
+                              	<!-- English -->
+                              	${record.subsidiary.custrecord_nbs_eng_footertag}
+                            </#if>
+							<#if subsidiary.federalidnumber?has_content> ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_vatlabel@label}:${subsidiary.federalidnumber}</#if>
+                 		</p>
+                	</td>
+            	</tr>
+             	<tr>
+                	<td class="tdc" style="font-size:6pt; text-align:left;" width="100%">
+                    	<p style="font-size:6pt;text-align:left; vertical-align: bottom;">
+                        	<#if .locale?trim?lower_case == record.subsidiary.custrecord_nbs_subsidiarylocale?trim?lower_case>
+                            	<!-- Native -->
+                               	<#if subsidiary.custrecord_nbs_ntv_bankinfo1?has_content>
+                                   	${subsidiary.custrecord_nbs_ntv_bankinfo1}<br />
+								</#if>
+                                   <#if subsidiary.custrecord_nbs_ntv_bankinfo2?has_content>
+                                   	${subsidiary.custrecord_nbs_ntv_bankinfo2}<br />
+								</#if>
+								<#if subsidiary.custrecord_nbs_ntv_bankinfo3?has_content>
+                                   	${subsidiary.custrecord_nbs_ntv_bankinfo3}<br />
+								</#if>
+							<#else>
+								<!-- English -->
+                           		<#if subsidiary.custrecord_nbs_eng_bankinfo1?has_content>
+                                	${subsidiary.custrecord_nbs_eng_bankinfo1}<br />
+                               	</#if>
+                                <#if subsidiary.custrecord_nbs_eng_bankinfo2?has_content>
+                                	${subsidiary.custrecord_nbs_eng_bankinfo2}<br />
+								</#if>
+								<#if subsidiary.custrecord_nbs_eng_bankinfo3?has_content>
+                                	${subsidiary.custrecord_nbs_eng_bankinfo3}<br />
+								</#if>
+							</#if>
+						</p>
+					</td>
+				</tr>
+			</table>
+		</macro>
+    </macrolist>
+      <style type="text/css">
+        body {
+         <#if .locale == "zh_CN">
+              font-family: stsong, sans-serif;
+          <#elseif .locale == "zh_TW">
+              font-family: msung, sans-serif;
+          <#elseif .locale == "ja_JP">
+              font-family: heiseimin, sans-serif;
+          <#elseif .locale == "ko_KR">
+              font-family: hygothic, sans-serif;
+          <#elseif .locale == "ru_RU">
+              font-family: verdana;
+          <#else>
+              font-family: sans-serif;
+          </#if>
+              font-size: 9pt;
+        }
+        table
+        {
+          <#if .locale == "zh_CN">
+              font-family: stsong, sans-serif;
+          <#elseif .locale == "zh_TW">
+              font-family: msung, sans-serif;
+          <#elseif .locale == "ja_JP">
+              font-family: heiseimin, sans-serif;
+          <#elseif .locale == "ko_KR">
+              font-family: hygothic, sans-serif;
+          <#elseif .locale == "ru_RU">
+              font-family: verdana;
+          <#else>
+              font-family: sans-serif;
+          </#if>
+              font-size: 8pt;
+              table-layout: fixed;
+          }
+          th {
+              font-weight: bold;
+              font-size: 7pt;
+              vertical-align: middle;
+              padding: 5px 3px 3px;
+              color: #333333;
+          }
+          td {
+              padding: 4px 3px;
+          }
+          tdc{
+               text-align: center;
+            }
+      </style>
+	</head>
+	<body header="nlheaderAX" header-height="2.7in" footer="nlfooterAX" footer-height="1.5in" padding="0.15in 0.5in 0.25in 0.5in" size="A4" >
+  		<table style="page-break-inside: avoid; width: 100%; margin-top: 5px;">
+    		<tr>
+        		<!-- DOC. TITLE -->
+              <td colspan="24" style="padding: 1;"></td>
+              <td colspan="17" style="font-weight: bold; font-size: 12pt; text-transform: uppercase; padding: 1;">
+                ${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_quoterecordtitle@label}
+              </td>
+          </tr>
+          <tr>
+              <!-- DOC NUMBER  -->
+              <td colspan="24" style="padding: 1;"></td>
+              <td colspan="6" style="padding: 1;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_quotenumberlabel@label} :</td>
+              <td colspan="7" style="text-align:left; padding: 1;">${record.tranid}</td>
+              <td colspan="4" style="align:right ; padding: 1; font-size: 7pt;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_page_label@label} <pagenumber/></td>
+          </tr>
+          <tr>
+              <!-- DATE -->
+              <td colspan="24" style="padding: 1;"></td>
+              <td colspan="6" style="padding: 1;">${record.trandate@label} :</td>
+              <td colspan="11" style="text-align:left; padding: 1;">${record.trandate}</td>
+          </tr>
+          <tr>
+              <!-- CUSTOMER NO -->
+              <td colspan="24" style="padding: 1;"></td>
+              <td colspan="6" style="padding: 1;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_customer_no@label} :</td>
+              <td colspan="11" style="text-align:left; padding: 1;">${record.entity.entityid}</td>
+          </tr>
+          <tr>
+              <!-- CUST. VAT NO -->
+              <td colspan="24" style="padding: 1;"></td>
+              <td colspan="6" style="padding: 1;">	${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_vatregno@label} : </td>
+              <td colspan="11" style="text-align:left; padding: 1;">
+                  <#if record.vatregnum?has_content>
+                      ${record.vatregnum}
+                  <#else>
+                      ${record.custbody_wag_cust_taxid}
+                  </#if>
+              </td>
+          </tr>
+          <tr>
+            <!-- SHIP TO ADDRESS HEADING & NUMBER -->
+            <td colspan="24" style="padding: 1;">${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_delivertolabel@label} :</td>
+            <td colspan="6" style="padding: 1;">Lieferanten-Nr. :</td>
+            <td colspan="11" style="text-align:left; padding: 1;">${record.entity.entityid}</td>
+          </tr>
+          <tr>
+            <!-- SHIP TO ADDRESS  -->
+            <td colspan="24" style="padding: 1;">${record.shipaddress}</td>
+            <td colspan="6" style="padding: 1;"></td>
+            <td colspan="11" style="text-align:left; padding: 1;"></td>
+          </tr>
+          <tr>
+            <!-- SPACE  -->
+            <td colspan="41" style="padding: 1;"><br /></td>
+          </tr>
+      	</table>
+      <!-- Heading Text  -->
+      <p style="text-align: left;">
+        <#if .locale=="en_GB" >
+          <#global heading = record.subsidiary.custrecord_wag_label_quoteheadingtxt_eng />
+          <#else>
+            <#global heading = record.subsidiary.custrecord_wag_label_quoteheadingtxt_ntv />
+            </#if>
+          <!-- do replacement if value -->
+          <#if heading?has_content>
+            <#if record.custbody_trans_contact_salut?has_content >
+              <#global heading = heading?replace('{salutation}',record.custbody_trans_contact_salut) />
+              </#if>
+            <#if record.custbody_trans_contact_lastname?has_content >
+              <#global heading = heading?replace('{lastname}',record.custbody_trans_contact_lastname) />
+              </#if>
+            <#if record.custbody_trans_contact_email?has_content >
+              <#global heading = heading?replace('{email}',record.custbody_trans_contact_email) />
+              </#if>
+            <!-- Print the heading text -->
+            <#escape x as x?html>
+              <#noescape>
+                ${heading}
+                </#noescape>
+              </#escape>
+            </#if>
+          </p>
+      	<!-- POS COUNTER  -->
+      	<#global pos_counter = 0 />
+      	<#if record.item?has_content>
+        	<table style="border-bottom:1px solid; width: 100%; margin-top: 10px;">
+          		<!-- start items -->
+          		<#list record.item as lineitem>
+            		<#if lineitem_index==0>
+                        <thead>
+                          <tr>
+                            <!-- Position -->
+                            <th align="center" colspan="2" style=" border-bottom: 1px solid ;">
+                            	<p style="text-align:center; word-break: keep-all;">
+                              		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_pos_label@label}
+                             	</p>
+                            </th>
+                            <th align="center" colspan="4" style=" border-bottom: 1px solid ;">
+								<p style="text-align:center; word-break: keep-all;">
+                              		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_itemno_label@label}
+								</p>
+                            </th>
+                            <th align="center" colspan="8" style=" border-bottom: 1px solid ;">
+                              	<p style="text-align:center; word-break: keep-all;">
+                                	${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_itemdesc@label}
+                              	</p>
+                            </th>
+                            <th align="center" colspan="4" style=" border-bottom: 1px solid ;">
+								<p style="text-align:center; word-break: keep-all;">
+                            		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_base_price@label}
+                               	</p>
+							</th>
+							<th align="center" colspan="3" style=" border-bottom: 1px solid ;">
+                            	<p style="text-align:center; word-break: keep-all;">
+                            		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_discount@label}
+                              	</p>
+							</th>
+                            <th align="center" colspan="4" style=" border-bottom: 1px solid ;">
+								<p style="text-align:center; word-break: keep-all;">
+                              		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_unitprice@label}
+                               	</p>
+                            </th>
+                            <th align="center" colspan="3" style=" border-bottom: 1px solid ;">
+								<p style="text-align:center; word-break: keep-all;">
+                              		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_quantity@label}
+                            	</p>
+                            </th>
+                            <th align="center" colspan="2" style=" border-bottom: 1px solid ;">
+								<p style="text-align:center; word-break: keep-all;">
+                              		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_baseunit@label}
+								</p>
+                            </th>
+                            <th align="center" colspan="4" style=" border-bottom: 1px solid ;">
+								<p style="text-align:center; word-break: keep-all;">
+                              		${record.subsidiary.custrecord_wag_labels_translation.custrecord_wag_label_netprice@label}
+                              	</p>
+                            </th>
+                            <th align="center" colspan="3" style=" border-bottom: 1px solid ;">
+                              	<p style="text-align:center; word-break: keep-all;">
+                                  ${record.subsidiary.custrecord_wag_delivery_weeklabel@label}
+                              	</p>
+                  			</th>
+                		</tr>
+              		</thead>
+              	</#if>
+            		<tr>
+                    	<#if lineitem.quantity!=0 ||  lineitem.itemtype =="Discount"   || lineitem.itemtype =="OthCharge">
+                      		<#global pos_counter = pos_counter + 1 />
+                   		</#if>
+                    	<!--  POSITION -->
+                    	<td align="center" colspan="2">
+                      		${pos_counter}
+                    	</td>
+                    	<td align="left" colspan="4" >
+                      		<!-- Print WA item information  -->
+                      		<#if notprint_itemno=="F"  && itemnodesc_printmode !="2" && lineitem.custcol_nbs_printeditemnumber?has_content && lineitem.itemtype !="Description">
+                        		<span style=" font-weight: bold; line-height: 150%; color: #333333;">
+                          			${lineitem.custcol_nbs_printeditemnumber}
+                        		</span><br />
+                        	</#if>
+                      		<!--  Print CUST. item info. -->
+                      		<!-- cust. item number  -->
+                      		<#if notprint_itemno=="F"  && (itemnodesc_printmode =="2" || itemnodesc_printmode =="3") && lineitem.itemtype !="Description">
+                        		<#if lineitem.custcol_wag_custitemnumber?has_content>
+                          			<span style=" font-weight: bold; line-height: 150%; color: #333333;">
+                            			${lineitem.custcol_wag_custitemnumber}
+                          			</span><br />
+                          		<#else>
+                            		<!-- when cust item number is BLANK , print WA item number when printmode =2 only , not need to print again when printmode=3 -->
+                            		<#if itemnodesc_printmode =="2"  && lineitem.custcol_nbs_printeditemnumber?has_content >
+                              			<span style=" font-weight: bold; line-height: 150%; color: #333333;">
+                                			${lineitem.custcol_nbs_printeditemnumber}
+                              			</span><br />
+                              		</#if>
+                            	</#if>
+                        	</#if>
+                        </td>
+
+                        <td align="left" colspan="8" >
+                        	<#if itemnodesc_printmode !="2">
+                            	<#if  lineitem.itemtype ="Description">
+                              		<!--  fix the text stretched issue for description item type  -->
+                              			<p style="text-align:left; align=left;">${lineitem.description}</p>
+                              	<#else>
+                                		${lineitem.description}<br />
+                               	</#if>
+                          	</#if>
+                            <!-- print CUST item desc. -->
+                            <#if (itemnodesc_printmode =="2" || itemnodesc_printmode =="3") >
+                            	<#if  lineitem.custcol_wag_customerdescription?has_content>
+                                	<!-- print cust desc. if it's not blank  -->
+                                	${lineitem.custcol_wag_customerdescription}<br />
+                                <#else>
+                                  	<!-- when CUST item desc. = BLANK , print WA item desc. when printmode =2 only , not need to print again when printmode=3 -->
+                               		<#if itemnodesc_printmode =="2"  && lineitem.description?has_content>
+                                    	<#if  lineitem.itemtype ="Description">
+                                      		<!--  fix the text stretched issue for description item type  -->
+                                      		<p style="text-align:left; align=left;">${lineitem.description}</p>
+                                      	<#else>
+                                        	${lineitem.description}<br />
+                                     	</#if>
+                                 	</#if>
+                              	</#if>
+                           	</#if>
+                            <!-- packing code -->
+                            <#if lineitem.custcol_wag_packaging_code?has_content>
+                            	${lineitem.custcol_wag_packaging_code}<br />
+                            </#if>
+                        </td>
+						<td align="right" colspan="4" >
+							${lineitem.custcol_wag_base_price}
+						</td>
+						<!-- DISCOUNT Price Level  -->
+						<td align="right" colspan="3" >
+							${lineitem.price}
+						</td>
+                        <td align="right" colspan="4" >
+                          ${lineitem.rate}
+                        </td>
+ 						<td align="center" colspan="3" >
+                          ${lineitem.quantity}
+                        </td>
+                        <td align="center" colspan="2" >
+                          ${lineitem.units}
+                        </td>
+                        <td align="right" colspan="4" >
+                          <!--  NOT print this  when item type is Description -->
+                          <#if !(lineitem.itemtype =="Description")>
+                            ${lineitem.amount}
+                            </#if>
+                        </td>
+                    	<td align="center" colspan="3">
+                      		<!--  NOT print this  when item type is Description, Subtotal, Other charges -->
+                      		<#if !(lineitem.itemtype =="Description" || lineitem.itemtype =="Subtotal" || lineitem.itemtype =="Discount")>
+                        		${lineitem.custcol_nbs_weekfieldso}
+                        	</#if>
+                    	</td>
+                    </tr>
+                  </#list>
+            </table>
+		</#if>
+	</body>
+</pdf>
