@@ -605,6 +605,7 @@ function prepareListofDunningLetters(request, response){
 		var folderurl = null;
 		var lookfortpl = null;
 		var looklng = null;
+		var dunningname = null;
 		
 		try {
 			nlapiLogExecution('DEBUG', 'Generate invoice list for Dunning Letters', 'Init Variables');
@@ -720,6 +721,7 @@ function prepareListofDunningLetters(request, response){
 					columns[1] = columns[0].setSort(); 
 					columns[2] = new nlobjSearchColumn( 'custrecord_wag_dunning_hist_lvl');
 					columns[3] = new nlobjSearchColumn( 'custrecord_wag_dunning_hist_inv');
+					columns[4] = new nlobjSearchColumn( 'name');					
 					
 					nlapiLogExecution('DEBUG', 'Generate Dunning Letter', 'Run the History search');
 					historicdl  = nlapiSearchRecord( 'customrecord_wag_dunning_history', null, filters, columns );
@@ -730,7 +732,7 @@ function prepareListofDunningLetters(request, response){
 					
 					for (var cpt=0; dunningsearch && dunningsearch.length>cpt; cpt++) {
 						curlevel = dunningsearch[cpt].getValue(columns[1]);
-						
+						dunningname = dunningsearch[cpt].getValue(columns[4]);
 						// Calculate from & to dates
 						fromdate = null
 						todate = null;
@@ -769,7 +771,7 @@ function prepareListofDunningLetters(request, response){
 							//Create Group per level of dunning letter
 							dunningform.addSubTab('custpage_tab_level' + cpt ,'Level '+ curlevel);
 							// Create sublist per level
-							dl_list[cpt] = dunningform.addSubList('custpage_list_level'+cpt, 'list', 'Dunning Letter Lvl '+curlevel);
+							dl_list[cpt] = dunningform.addSubList('custpage_list_level'+cpt, 'list', dunningname);
 							dl_list[cpt].addMarkAllButtons();
 							//Create list of fields
 

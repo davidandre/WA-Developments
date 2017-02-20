@@ -1,0 +1,44 @@
+<project info="SuiteCloud IDE generated file, do not edit." setAttributesOnUpdate="false">
+  <folder name="WA" bundleable="true">
+    <folder name="PDF_Templates" bundleable="true">
+      <file name="IA Bill Of Material Template.html" bundleable="true"/>
+      <file name="WA Credit Memo Template.html" bundleable="true"/>
+      <file name="WA INVOICE TEMPLATE.html" bundleable="true"/>
+      <file name="WA Purchase Order Template.html" bundleable="true"/>
+      <file name="WA Quote Template.html" bundleable="true"/>
+      <file name="WA Remittance Advice.html" bundleable="true"/>
+      <file name="WA Return Authorization Template.html" bundleable="true"/>
+      <file name="WA SALES ORDER TEMPLATE.html" bundleable="true"/>
+      <file name="WAIA Delivery Note Template.html" bundleable="true"/>
+      <file name="WAIA MultiCurrencyStatement Template.html" bundleable="true"/>
+    </folder>
+    <folder name="Training" bundleable="true">
+      <file name="README.txt" bundleable="true"/>
+      <file name="SimpleSuiteletExample.js" bundleable="true"/>
+      <file name="wa_getLotNextNumber_UE.js" bundleable="true"/>
+      <file name="wa_getLotNextNumber_UE.txt" bundleable="true"/>
+      <file name="wa_mainInclude.js" bundleable="true"/>
+    </folder>
+    <folder name="WA_Scripts_Repository" bundleable="true">
+      <file name="CleanupJDEfromAddresses.js" bundleable="true"/>
+      <file name="WAFulFillment.js" bundleable="true"/>
+      <file name="WA_CoilInfo_WeightCalculation.js" bundleable="true"/>
+      <file name="WA_CycleCountExport.js" bundleable="true"/>
+      <file name="WA_CycleCount_ActionButton.js" bundleable="true"/>
+      <file name="WA_Dunningletter.js" bundleable="true"/>
+      <file name="WA_Inventory_Adjustment.js" bundleable="true"/>
+      <file name="WA_Pallets.js" bundleable="true"/>
+      <file name="WA_PurchaseOrder_CL.js" bundleable="true"/>
+      <file name="WA_PurchaseOrder_UE.js" bundleable="true"/>
+      <file name="WA_Sales_UE.js" bundleable="true"/>
+      <file name="WA_Sales_defaultingdepartment.js" bundleable="true"/>
+      <file name="WA_Suitelets.js" bundleable="true"/>
+      <file name="WA_UpdateFields.js" bundleable="true"/>
+      <file name="WA_WorkOrders.js" bundleable="true"/>
+      <file name="Wa_CustomerDescription.js" bundleable="true"/>
+      <file name="project.xml" bundleable="true"/>
+      <file name="wa_mainInclude.js" bundleable="true"/>
+      <file name="wa_purchase_defaultingdepartement.js" bundleable="true"/>
+    </folder>
+  </folder>
+</project>
