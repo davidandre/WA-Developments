@@ -576,7 +576,8 @@ function genBodyDunningLetter(request) {
 }
 
 /*
- *  Gen list of all customers/invoice to send dunning letter to
+ * Suitelet 
+ *  Generate list of all customers/invoice to send dunning letter to
  *  
  */
 function prepareListofDunningLetters(request, response){

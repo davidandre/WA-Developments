@@ -161,7 +161,7 @@ function genLabels(doctitle) {
 function genWAHeader(request){
 	
 	var header= null;
-	var printExtAddr = false;
+	var printextaddr = false;
 	
 	try {
 		

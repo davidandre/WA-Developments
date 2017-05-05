@@ -260,6 +260,10 @@ function checkItemLotFromFulfill(type, name, linenum) {
 					else
 					{
 					    nlapiLogExecution( 'DEBUG', 'Pallet Log', 'Item is present in the fulfillment');
+					    var sUrl2 = nlapiResolveURL('SUITELET', 'customscript_wag_pallet_loaditemdescs', 'customdeploy_wag_pallet_loaditemdescs');
+						sUrl2 = sUrl2 + '&fullfilid=' + fulfill +'&itemid=' + itemid;
+						window.open(sUrl2);
+						
 					    return true;
 					}
 				}
@@ -534,3 +538,65 @@ function validateline(type)
 return true;
 
 }
+
+
+
+/**
+ * Pallet Modal Window to select Item description
+ * 
+ * @param {nlobjRequest} request Request object
+ * @param {nlobjResponse} response Response object
+ * @returns {Void} Any output is written via response object
+ */
+function suitelet(request, response){
+
+	
+	try {
+	  var assistant = nlapiCreateAssistant("Item Selection", true);
+	    assistant.setOrdered(true);
+	 
+	//---------step 2--------------
+	    assistant.addStep('Item Selection', 'Description').setHelpText("Please select one of the item description available");
+	    
+	    if (request.getMethod() == 'GET') {
+	        if (!assistant.isFinished()) {
+	           
+	            if (assistant.getCurrentStep() == null) {
+	                assistant.setCurrentStep(assistant.getStep("customer"));              
+	            }
+	 
+	            var step = assistant.getCurrentStep();
+	 
+	            if (step.getName() == "Item Selection") {
+	            	var name = assistant.addField('cust_name', 'select', 'Customer', 'customer');
+	                name.setMandatory(true);
+	            }
+	        }
+	        response.writePage(assistant);
+	    }
+	    else {
+	        assistant.setError(null);
+	 // if they clicked the finish button, mark setup as done and redirect to assistant page
+	        if (assistant.getLastAction() == "finish") {
+	            assistant.setFinished("You have submitted customer details successfully");
+	            assistant.sendRedirect(response);
+	        }
+	       
+	        if (assistant.getLastAction() == "cancel") {
+	         //----redirect to the same page
+	        }     
+	    } 
+	               
+	}
+	catch(e)
+	{
+		if ( e instanceof nlobjError )
+	          nlapiLogExecution( 'DEBUG', 'system error', e.getCode() + '\n' + e.getDetails() );
+	    else
+	          nlapiLogExecution( 'DEBUG', 'unexpected error', e.toString() );
+	}
+	
+}
+
+
+
